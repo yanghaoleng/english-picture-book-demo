@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiMo TTS Tool</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:24px;max-width:800px;margin:0 auto}
+h1{font-size:24px;color:#333;margin-bottom:16px}
+h2{font-size:16px;color:#666;margin-bottom:8px;margin-top:20px}
+.group{background:#fff;border-radius:12px;padding:16px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+label{display:block;font-size:13px;color:#888;margin-bottom:4px}
+textarea{width:100%;border:1px solid #ddd;border-radius:8px;padding:10px;font-size:14px;resize:vertical;min-height:80px;font-family:inherit}
+input[type=text]{width:100%;border:1px solid #ddd;border-radius:8px;padding:8px 10px;font-size:14px}
+select{width:100%;border:1px solid #ddd;border-radius:8px;padding:8px 10px;font-size:14px;background:#fff}
+.btn{background:#4A90D9;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:14px;cursor:pointer;transition:background 0.2s}
+.btn:hover{background:#357ABD}
+.btn:disabled{background:#ccc;cursor:not-allowed}
+.status{font-size:13px;color:#888;margin-top:8px}
+.player{margin-top:12px;display:none}
+.player.show{display:block}
+audio{width:100%;margin-top:8px}
+.download{display:inline-block;margin-top:8px;font-size:13px;color:#4A90D9;cursor:pointer}
+.log{background:#fff;border-radius:12px;padding:16px;margin-top:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.log-item{font-size:13px;color:#666;padding:4px 0;border-bottom:1px solid #eee}
+.log-item:last-child{border-bottom:none}
+.log-item .text{color:#333}
+.log-item .meta{color:#888;font-size:12px}
+</style>
+</head>
+<body>
+<h1>MiMo TTS Audio Generator</h1>
+
+<div class="group">
+  <label>API Key</label>
+  <input type="text" id="apiKey" placeholder="Enter your MiMo API Key">
+</div>
+
+<div class="group">
+  <label>Model</label>
+  <select id="model">
+    <option value="mimo-v2.5-tts">MiMo-V2.5-TTS (Built-in voices)</option>
+    <option value="mimo-v2.5-tts-voicedesign">MiMo-V2.5-TTS-VoiceDesign</option>
+    <option value="mimo-v2.5-tts-voiceclone">MiMo-V2.5-TTS-VoiceClone</option>
+  </select>
+</div>
+
+<div class="group">
+  <label>Voice (for mimo-v2.5-tts model)</label>
+  <select id="voice">
+    <option value="Mia">Mia (English Female)</option>
+    <option value="Chloe">Chloe (English Female)</option>
+    <option value="Milo">Milo (English Male)</option>
+    <option value="Dean">Dean (English Male)</option>
+    <option value="冰糖">冰糖 (Chinese Female)</option>
+    <option value="茉莉">茉莉 (Chinese Female)</option>
+    <option value="苏打">苏打 (Chinese Male)</option>
+    <option value="白桦">白桦 (Chinese Male)</option>
+  </select>
+</div>
+
+<div class="group">
+  <label>Style Instructions (placed in user message)</label>
+  <textarea id="style" placeholder="e.g. Gentle, warm female voice speaking slowly to young children...">Gentle, warm, and soothing female voice speaking slowly to young children. Clear pronunciation, loving and encouraging tone, like a mother reading a bedtime story.</textarea>
+</div>
+
+<div class="group">
+  <label>Text to Synthesize (placed in assistant message)</label>
+  <textarea id="text" placeholder="Enter the text you want to convert to speech..."></textarea>
+</div>
+
+<div class="group">
+  <label>Output Format</label>
+  <select id="format">
+    <option value="wav">WAV</option>
+    <option value="mp3">MP3</option>
+  </select>
+</div>
+
+<button class="btn" id="generateBtn">Generate Audio</button>
+<div class="status" id="status"></div>
+
+<div class="player" id="player">
+  <label>Generated Audio</label>
+  <audio id="audioPlayer" controls></audio>
+  <a class="download" id="downloadLink">Download</a>
+</div>
+
+<h2>Batch Generation (Book Pages)</h2>
+<div class="group">
+  <label>Click to generate all 8 pages of "I Want a Party!"</label>
+  <button class="btn" id="batchBtn">Generate All Pages</button>
+  <div class="status" id="batchStatus"></div>
+</div>
+
+<div class="log" id="log">
+  <h2>Generation Log</h2>
+  <div id="logContent"></div>
+</div>
+
+<script>
+const apiKeyEl=document.getElementById('apiKey');
+const modelEl=document.getElementById('model');
+const voiceEl=document.getElementById('voice');
+const styleEl=document.getElementById('style');
+const textEl=document.getElementById('text');
+const formatEl=document.getElementById('format');
+const generateBtn=document.getElementById('generateBtn');
+const statusEl=document.getElementById('status');
+const playerEl=document.getElementById('player');
+const audioPlayer=document.getElementById('audioPlayer');
+const downloadLink=document.getElementById('downloadLink');
+const batchBtn=document.getElementById('batchBtn');
+const batchStatusEl=document.getElementById('batchStatus');
+const logContent=document.getElementById('logContent');
+
+function addLog(text,meta){
+  const d=document.createElement('div');
+  d.className='log-item';
+  d.innerHTML='<span class="text">'+text+'</span> <span class="meta">'+meta+'</span>';
+  logContent.appendChild(d);
+}
+
+async function callTTS(apiKey,model,voice,style,text,format){
+  const body={
+    model:model,
+    messages:[
+      {role:"user",content:style},
+      {role:"assistant",content:text}
+    ],
+    audio:{format:format,voice:voice}
+  };
+  const r=await fetch("https://api.xiaomimimo.com/v1/chat/completions",{
+    method:"POST",
+    headers:{"api-key":apiKey,"Content-Type":"application/json"},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok){
+    const err=await r.text();
+    throw new Error("API Error "+r.status+": "+err.substring(0,200));
+  }
+  const data=await r.json();
+  const audioB64=data.choices[0].message.audio.data;
+  const audioBytes=atob(audioB64);
+  const uint8=new Uint8Array(audioBytes.length);
+  for(let i=0;i<audioBytes.length;i++)uint8[i]=audioBytes.charCodeAt(i);
+  const mime=format==='mp3'?'audio/mpeg':'audio/wav';
+  const blob=new Blob([uint8],{type:mime});
+  return{blob,mime};
+}
+
+generateBtn.addEventListener('click',async()=>{
+  const apiKey=apiKeyEl.value.trim();
+  if(!apiKey){statusEl.textContent="Please enter API Key";return}
+  const text=textEl.value.trim();
+  if(!text){statusEl.textContent="Please enter text";return}
+  generateBtn.disabled=true;
+  statusEl.textContent="Generating...";
+  try{
+    const result=await callTTS(apiKey,modelEl.value,voiceEl.value,styleEl.value,text,formatEl.value);
+    const url=URL.createObjectURL(result.blob);
+    audioPlayer.src=url;
+    downloadLink.href=url;
+    downloadLink.download="tts_output."+formatEl.value;
+    playerEl.classList.add('show');
+    statusEl.textContent="Done! ("+result.blob.size+" bytes)";
+    addLog(text,"OK - "+result.blob.size+" bytes");
+  }catch(e){
+    statusEl.textContent="Error: "+e.message;
+    addLog(text,"Error: "+e.message);
+  }
+  generateBtn.disabled=false;
+});
+
+const pages=[
+  "I want a party.",
+  "I want some cards.",
+  "I want some gifts.",
+  "I want some balloons.",
+  "I want some cupcakes.",
+  "I want some toys.",
+  "Party time!",
+  "Thank you, Elephant."
+];
+
+batchBtn.addEventListener('click',async()=>{
+  const apiKey=apiKeyEl.value.trim();
+  if(!apiKey){batchStatusEl.textContent="Please enter API Key";return}
+  batchBtn.disabled=true;
+  batchStatusEl.textContent="Generating 8 pages...";
+  for(let i=0;i<pages.length;i++){
+    batchStatusEl.textContent="Generating page "+(i+1)+"/8: "+pages[i];
+    try{
+      const result=await callTTS(apiKey,modelEl.value,voiceEl.value,styleEl.value,pages[i],'wav');
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(result.blob);
+      a.download="page"+(i+1)+".wav";
+      a.textContent="Download page"+(i+1)+".wav ("+result.blob.size+" bytes)";
+      a.style.cssText='display:block;padding:4px 0;color:#4A90D9;font-size:13px';
+      batchStatusEl.appendChild(a);
+      addLog(pages[i],"OK - page"+(i+1)+".wav - "+result.blob.size+" bytes");
+    }catch(e){
+      addLog(pages[i],"Error: "+e.message);
+      batchStatusEl.textContent="Error on page "+(i+1)+": "+e.message;
+    }
+  }
+  batchStatusEl.textContent="Batch complete! Download files above, then move them to assets/audio/ folder.";
+  batchBtn.disabled=false;
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>I Want a Party!</title>
+<style>
+@font-face{font-family:'JojoABC';src:url('assets/font/JOJO ABC Medium.ttf') format('truetype');font-weight:400;font-style:normal}
+
+:root{
+  --yellow-1:#FCF9DE;
+  --yellow-4:#FCDA00;
+  --gray-6:#404040;
+  --gray-4:#B2B2B2;
+  --gray-2:#F5F4F4;
+  --orange-4:#FF8C00;
+  --orange-5:#E35B00;
+  --green-4:#5DC43B;
+  --brown-3:#E0BF94;
+  --motion-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --motion-standard:cubic-bezier(0.22,1,0.36,1);
+  --safe-bottom:env(safe-area-inset-bottom, 0px);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+
+body{background:#fff;display:flex;justify-content:center;align-items:center;font-family:'JojoABC','PingFang SC',system-ui,sans-serif}
+
+.app{width:100vw;height:100vh;position:relative;display:flex;flex-direction:column;background:#fff;overflow:hidden}
+
+.picture-row{flex:1;display:flex;align-items:center;position:relative;min-height:0}
+
+.arrow-btn{position:absolute;top:50%;transform:translateY(-50%);z-index:15;width:44px;height:44px;border:none;background:rgba(255,255,255,0.7);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform 0.15s,background 0.2s;backdrop-filter:blur(4px)}
+.arrow-btn img{width:24px;height:24px}
+.arrow-btn:hover{background:rgba(255,255,255,0.9);transform:translateY(-50%) scale(1.08)}
+.arrow-btn:disabled{opacity:0.25;cursor:not-allowed;transform:translateY(-50%)}
+.arrow-left{left:8px}
+.arrow-right{right:8px}
+.arrow-right img{transform:scaleX(-1)}
+
+.picture-wrap{flex:1;display:flex;justify-content:center;align-items:center;position:relative;overflow:hidden;margin:0 60px}
+.page-img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none;transition:transform 0.5s var(--motion-spring),opacity 0.3s}
+.page-img.slide-out-left{transform:translateX(-100%);opacity:0}
+.page-img.slide-out-right{transform:translateX(100%);opacity:0}
+.page-img.slide-in{transform:translateX(0);opacity:1}
+
+.hotspot{position:absolute;width:45px;height:45px;cursor:pointer;z-index:10;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s}
+.hotspot.visible{opacity:1}
+.hotspot-dot{width:18px;height:18px;background:var(--yellow-4);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:dotPulse 1.5s ease-in-out infinite;box-shadow:0 0 10px rgba(252,218,0,0.5);border:3px solid #fff}
+.hotspot-ring{width:45px;height:45px;border:2.5px solid rgba(252,218,0,0.4);border-radius:50%;position:absolute;top:0;left:0;animation:ringPulse 1.5s ease-in-out infinite}
+.hotspot.stamp-in{animation:stampIn 1.2s var(--motion-spring) forwards}
+@keyframes dotPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-50%,-50%) scale(1.4);opacity:0.8}}
+@keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.6);opacity:0}}
+@keyframes stampIn{0%{transform:translate(-50%,-50%) scale(2.5);opacity:0}40%{transform:translate(-50%,-50%) scale(0.9);opacity:1}60%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+
+.flying-card{position:absolute;z-index:30;width:48px;height:48px;border-radius:50%;border:3px solid #fff;background:var(--yellow-4);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,0.15);pointer-events:none;transition:all 0.6s var(--motion-spring)}
+
+.bottom-section{flex-shrink:0;display:flex;align-items:stretch;background:var(--yellow-1);padding-bottom:calc(44px + var(--safe-bottom))}
+
+.text-row{flex:1;display:flex;align-items:center;padding:20px 16px;gap:10px;min-height:128px}
+.speaker-btn{width:48px;height:48px;border:none;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform 0.15s,background 0.2s;border-radius:50%}
+.speaker-btn img{width:29px;height:29px;transition:filter 0.2s}
+.speaker-btn:hover{transform:scale(1.1)}
+.speaker-btn.reading{background:var(--orange-4)}
+.speaker-btn.reading img{filter:none}
+
+.text-content{display:flex;align-items:center;gap:4px;flex:1;justify-content:flex-start}
+.text-word{font-family:'JojoABC',sans-serif;font-size:36px;color:var(--gray-6);display:inline-block;padding:1px 3px;transform-origin:50% 55%;will-change:transform,opacity}
+.text-word.highlighted{color:var(--orange-5)}
+.text-space{font-family:'JojoABC',sans-serif;font-size:36px;color:var(--gray-6)}
+
+.task-bar{display:flex;align-items:center;gap:10px;padding:20px 16px 20px 80px;justify-content:flex-end}
+.task-slot{width:60px;height:60px;border-radius:50%;border:2.5px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
+.task-slot.filled{border:2px solid #fff;background:var(--yellow-4);box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;animation:slotPopIn 0.5s var(--motion-spring) forwards}
+.task-slot.filled .task-icon{font-size:33px}
+@keyframes slotPopIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
+
+.knowledge-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:35;display:none;justify-content:center;align-items:center;animation:overlayFadeIn 0.3s ease-out}
+.knowledge-overlay.show{display:flex}
+@keyframes overlayFadeIn{from{opacity:0}to{opacity:1}}
+
+.knowledge-card{background:#fff;border-radius:32px;padding:48px 56px;box-shadow:0 12px 40px rgba(0,0,0,0.2);display:flex;flex-direction:column;align-items:center;gap:24px;animation:knowledgePop 0.4s var(--motion-spring)}
+.knowledge-card-icon{font-size:112px}
+.knowledge-card-word{font-family:'JojoABC',sans-serif;font-size:56px;color:var(--gray-6)}
+.knowledge-card-speak{width:88px;height:88px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--orange-4);padding:0;transition:transform 0.15s}
+.knowledge-card-speak img{width:64px;height:64px}
+.knowledge-card-speak:hover{transform:scale(1.1)}
+@keyframes knowledgePop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+
+.settings-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border:none;background:rgba(255,255,255,0.5);cursor:pointer;z-index:15;display:flex;align-items:center;justify-content:center;padding:0;border-radius:50%;transition:opacity 0.2s,transform 0.15s,background 0.2s}
+.settings-btn img{width:24px;height:24px}
+.settings-btn:hover{background:rgba(255,255,255,0.8);transform:scale(1.1)}
+
+.settings-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.35);z-index:40;display:none;justify-content:center;align-items:center}
+.settings-overlay.show{display:flex}
+.settings-box{background:#fff;border-radius:20px;padding:20px;width:260px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.settings-title{font-family:'JojoABC',sans-serif;font-size:16px;color:var(--gray-6);margin-bottom:14px;text-align:center}
+.settings-group{margin-bottom:14px}
+.settings-label{font-family:'JojoABC',sans-serif;font-size:13px;color:var(--gray-4);margin-bottom:6px;display:block}
+.speed-row{display:flex;gap:6px}
+.speed-opt{padding:6px 14px;border-radius:8px;border:2px solid var(--orange-5);background:#fff;color:var(--orange-5);font-family:'JojoABC',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s}
+.speed-opt.active{background:var(--orange-5);color:#fff}
+.toggle-row{display:flex;align-items:center;justify-content:space-between}
+.toggle-track{width:44px;height:24px;border-radius:12px;background:var(--gray-4);cursor:pointer;position:relative;transition:background 0.3s}
+.toggle-track.on{background:var(--green-4)}
+.toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.3s}
+.toggle-track.on .toggle-thumb{left:22px}
+.settings-done{width:100%;padding:8px;border-radius:10px;border:none;background:var(--orange-5);color:#fff;font-family:'JojoABC',sans-serif;font-size:14px;cursor:pointer;margin-top:6px}
+
+.celeb-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:25;display:none;justify-content:center;align-items:center;pointer-events:none}
+.celeb-layer.show{display:flex}
+.celeb-inner{display:flex;flex-direction:column;align-items:center;gap:12px;animation:celebPop 0.5s ease-out}
+.celeb-flower{font-size:176px;animation:flowerSpin 0.6s ease-out}
+.celeb-text{font-family:'JojoABC',sans-serif;font-size:24px;color:var(--orange-5);background:rgba(255,255,255,0.95);padding:8px 24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+@keyframes celebPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes flowerSpin{0%{transform:scale(0) rotate(-180deg)}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0deg)}}
+
+.confetti-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:24;pointer-events:none;overflow:hidden}
+.confetti{position:absolute;top:-10px;animation:confDrop linear forwards}
+@keyframes confDrop{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(800px) rotate(720deg);opacity:0}}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="picture-row" id="pictureRow">
+    <button class="arrow-btn arrow-left" id="prevBtn" disabled><img src="assets/UI/back.svg" alt="Prev"></button>
+    <div class="picture-wrap" id="pictureWrap">
+      <img class="page-img" id="pageImg" src="" alt="">
+    </div>
+    <button class="arrow-btn arrow-right" id="nextBtn"><img src="assets/UI/back.svg" alt="Next"></button>
+    <button class="settings-btn" id="settingsBtn"><img src="assets/UI/setting.svg" alt="Settings"></button>
+  </div>
+  <div class="bottom-section">
+    <div class="text-row">
+      <button class="speaker-btn" id="speakerBtn"><img src="assets/UI/speck.svg" alt="Read"></button>
+      <div class="text-content" id="textContent"></div>
+    </div>
+    <div class="task-bar" id="taskBar"></div>
+  </div>
+  <div class="celeb-layer" id="celebLayer">
+    <div class="celeb-inner">
+      <div class="celeb-flower">🌸</div>
+      <div class="celeb-text">Great job!</div>
+    </div>
+  </div>
+  <div class="confetti-layer" id="confettiLayer"></div>
+  <div class="knowledge-overlay" id="knowledgeOverlay">
+    <div class="knowledge-card" id="knowledgeCard">
+      <div class="knowledge-card-icon" id="knowledgeIcon"></div>
+      <span class="knowledge-card-word" id="knowledgeWord"></span>
+      <button class="knowledge-card-speak" id="knowledgeSpeak"><img src="assets/UI/speck.svg" alt="Speak"></button>
+    </div>
+  </div>
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="settings-box">
+      <div class="settings-title">Settings</div>
+      <div class="settings-group">
+        <span class="settings-label">Reading Speed</span>
+        <div class="speed-row">
+          <button class="speed-opt" data-speed="0.6">Slow</button>
+          <button class="speed-opt active" data-speed="0.85">Normal</button>
+          <button class="speed-opt" data-speed="1.2">Fast</button>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="toggle-row">
+          <span class="settings-label">Auto Page Turn</span>
+          <div class="toggle-track on" id="autoToggle">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-group">
+        <div class="toggle-row">
+          <span class="settings-label">Background Music</span>
+          <div class="toggle-track on" id="bgmToggle">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      </div>
+      <button class="settings-done" id="settingsDone">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PAGES=[
+  {image:'assets/内页01.png',text:'I want a party.',words:['I','want','a','party'],hotspots:[{x:50,y:45,word:'party',icon:'🎉'}]},
+  {image:'assets/内页02.png',text:'I want some cards.',words:['I','want','some','cards'],hotspots:[{x:30,y:50,word:'cards',icon:'🃏'},{x:65,y:45,word:'cards',icon:'🃏'}]},
+  {image:'assets/内页03.png',text:'I want some gifts.',words:['I','want','some','gifts'],hotspots:[{x:35,y:50,word:'gifts',icon:'🎁'},{x:65,y:48,word:'gifts',icon:'🎁'}]},
+  {image:'assets/内页04.png',text:'I want some balloons.',words:['I','want','some','balloons'],hotspots:[{x:25,y:35,word:'balloons',icon:'🎈'},{x:50,y:30,word:'balloons',icon:'🎈'},{x:75,y:38,word:'balloons',icon:'🎈'}]},
+  {image:'assets/内页05.png',text:'I want some cupcakes.',words:['I','want','some','cupcakes'],hotspots:[{x:30,y:55,word:'cupcakes',icon:'🧁'},{x:55,y:52,word:'cupcakes',icon:'🧁'},{x:75,y:58,word:'cupcakes',icon:'🧁'}]},
+  {image:'assets/内页06.png',text:'I want some toys.',words:['I','want','some','toys'],hotspots:[{x:25,y:50,word:'toys',icon:'🪀'},{x:50,y:48,word:'toys',icon:'🪀'},{x:75,y:52,word:'toys',icon:'🪀'}]},
+  {image:'assets/内页07.png',text:'Party time!',words:['Party','time'],hotspots:[{x:50,y:50,word:'party',icon:'🎉'}]},
+  {image:'assets/内页08.png',text:'Thank you, Elephant.',words:['Thank','you','Elephant'],hotspots:[{x:50,y:50,word:'elephant',icon:'🐘'}]}
+];
+
+let currentPage=0;
+let explored={};
+let speed=0.85;
+let autoTurn=true;
+let reading=false;
+let readingPaused=false;
+let autoTimer=null;
+let bgmAudio=null;
+let bgmEnabled=true;
+let knowledgeShowing=false;
+let knowledgeDelay=0;
+let readCompleteTimer=null;
+let ttsVoice=null;
+let ttsReady=false;
+let knowledgeSourceEl=null;
+let knowledgeExitAnim=null;
+
+const $=id=>document.getElementById(id);
+const pageImg=$('pageImg');
+const pictureWrap=$('pictureWrap');
+const textContent=$('textContent');
+const taskBar=$('taskBar');
+const prevBtn=$('prevBtn');
+const nextBtn=$('nextBtn');
+const speakerBtn=$('speakerBtn');
+const settingsBtn=$('settingsBtn');
+const settingsOverlay=$('settingsOverlay');
+const settingsDone=$('settingsDone');
+const autoToggle=$('autoToggle');
+const bgmToggleEl=$('bgmToggle');
+const celebLayer=$('celebLayer');
+const confettiLayer=$('confettiLayer');
+const knowledgeOverlay=$('knowledgeOverlay');
+const knowledgeCard=$('knowledgeCard');
+const knowledgeIcon=$('knowledgeIcon');
+const knowledgeWord=$('knowledgeWord');
+const knowledgeSpeak=$('knowledgeSpeak');
+
+function initTTS(){
+  function loadVoices(){
+    const voices=speechSynthesis.getVoices();
+    if(!voices.length)return;
+    ttsReady=true;
+    const en=voices.filter(v=>v.lang.startsWith('en'));
+    if(!en.length){ttsVoice=null;return}
+    const names=['Samantha','Victoria','Karen','Moira','Ava','Allison','Google US English','Microsoft Zira'];
+    for(const n of names){
+      const v=en.find(v=>v.name.includes(n));
+      if(v){ttsVoice=v;return}
+    }
+    const us=en.find(v=>v.lang==='en-US');
+    ttsVoice=us||en[0];
+  }
+  loadVoices();
+  speechSynthesis.onvoiceschanged=loadVoices;
+}
+
+function ttsSpeak(text){
+  if(!ttsReady){
+    speechSynthesis.getVoices();
+  }
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US';
+  u.rate=speed;
+  u.pitch=1.0;
+  u.volume=1.0;
+  if(ttsVoice)u.voice=ttsVoice;
+  speechSynthesis.speak(u);
+}
+
+function ttsCancel(){
+  speechSynthesis.cancel();
+}
+
+function ttsPause(){
+  speechSynthesis.pause();
+}
+
+function ttsResume(){
+  speechSynthesis.resume();
+}
+
+function animateTextEntry(){
+  const wordEls=textContent.querySelectorAll('.text-word');
+  const staggerMs=88;
+  const durationMs=400;
+  const easing='cubic-bezier(0.18,1,0.32,1)';
+  wordEls.forEach((el,i)=>{
+    el.animate([
+      {opacity:0,transform:'translateY(46px)'},
+      {opacity:1,transform:'translateY(0)'}
+    ],{
+      duration:durationMs,
+      delay:i*staggerMs,
+      easing:easing,
+      fill:'both'
+    });
+  });
+}
+
+function startBgm(){
+  if(bgmAudio)return;
+  bgmAudio=new Audio('assets/sound/Nintendo Sound Team - New Years Eve (1100 p.m.).mp3');
+  bgmAudio.loop=true;
+  bgmAudio.volume=0.3;
+  bgmAudio.play().catch(()=>{});
+}
+
+function stopBgm(){
+  if(!bgmAudio)return;
+  bgmAudio.pause();
+  bgmAudio.currentTime=0;
+  bgmAudio=null;
+}
+
+function toggleBgm(on){
+  bgmEnabled=on;
+  if(on){startBgm()}else{stopBgm()}
+}
+
+function showHotspots(){
+  pictureWrap.querySelectorAll('.hotspot').forEach(el=>{
+    el.classList.add('visible','stamp-in');
+  });
+}
+
+function hideHotspots(){
+  pictureWrap.querySelectorAll('.hotspot').forEach(el=>{
+    el.classList.remove('visible','stamp-in');
+  });
+}
+
+function init(){
+  PAGES.forEach((_,i)=>{explored[i]=new Set()});
+  initTTS();
+  renderPage(0);
+  bindEvents();
+  document.addEventListener('click',()=>{
+    if(bgmEnabled&&!bgmAudio)startBgm();
+  },{once:true});
+  document.addEventListener('touchstart',()=>{
+    if(bgmEnabled&&!bgmAudio)startBgm();
+  },{once:true});
+}
+
+function restartBook(){
+  stopReading();
+  if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
+  PAGES.forEach((_,i)=>{explored[i]=new Set()});
+  renderPage(0);
+}
+
+function renderPage(idx){
+  const page=PAGES[idx];
+  currentPage=idx;
+  clearAutoTimer();
+  reading=false;
+  readingPaused=false;
+  knowledgeDelay=0;
+  if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
+  speakerBtn.classList.remove('reading');
+
+  pageImg.src=page.image;
+  prevBtn.disabled=idx===0;
+  nextBtn.disabled=idx===PAGES.length-1;
+
+  textContent.innerHTML='';
+  page.words.forEach((w,i)=>{
+    const span=document.createElement('span');
+    span.className='text-word';
+    span.textContent=w;
+    span.dataset.wi=i;
+    textContent.appendChild(span);
+    if(i<page.words.length-1){
+      const sp=document.createElement('span');
+      sp.className='text-space';
+      sp.textContent=' ';
+      textContent.appendChild(sp);
+    }
+  });
+
+  animateTextEntry();
+
+  pictureWrap.querySelectorAll('.hotspot').forEach(el=>el.remove());
+  page.hotspots.forEach((hs,hi)=>{
+    const el=document.createElement('div');
+    el.className='hotspot';
+    el.style.left=hs.x+'%';
+    el.style.top=hs.y+'%';
+    el.dataset.hi=hi;
+    el.innerHTML='<div class="hotspot-dot"></div><div class="hotspot-ring"></div>';
+    el.addEventListener('click',e=>{
+      e.stopPropagation();
+      onHotspot(idx,hi,hs,el);
+    });
+    pictureWrap.appendChild(el);
+  });
+
+  renderTaskBar(idx);
+  hideKnowledge();
+  hideCeleb();
+
+  setTimeout(()=>readPage(),600);
+}
+
+function renderTaskBar(idx){
+  const page=PAGES[idx];
+  taskBar.innerHTML='';
+  page.hotspots.forEach((hs,hi)=>{
+    const slot=document.createElement('div');
+    slot.className='task-slot';
+    if(explored[idx].has(hi)){
+      slot.classList.add('filled');
+      const icon=document.createElement('span');
+      icon.className='task-icon';
+      icon.textContent=hs.icon;
+      slot.appendChild(icon);
+      slot.addEventListener('click',e=>{
+        e.stopPropagation();
+        showKnowledge(hs);
+      });
+    }
+    taskBar.appendChild(slot);
+  });
+}
+
+function showKnowledge(hs){
+  knowledgeShowing=true;
+  knowledgeIcon.textContent=hs.icon;
+  knowledgeWord.textContent=hs.word;
+  knowledgeOverlay.classList.add('show');
+  knowledgeSpeak.onclick=()=>ttsSpeak(hs.word);
+
+  if(reading&&!readingPaused){
+    readingPaused=true;
+    ttsPause();
+  }
+
+  setTimeout(()=>ttsSpeak(hs.word),1000);
+}
+
+function hideKnowledge(){
+  knowledgeShowing=false;
+  knowledgeOverlay.classList.remove('show');
+
+  if(readingPaused){
+    readingPaused=false;
+    ttsResume();
+  }
+
+  knowledgeDelay+=3000;
+}
+
+function onHotspot(pi,hi,hs,hotspotEl){
+  const wasExplored=explored[pi].has(hi);
+  explored[pi].add(hi);
+
+  showKnowledge(hs);
+
+  if(!wasExplored){
+    setTimeout(()=>{
+      hideKnowledge();
+      flyToTaskBar(hs,hi,hotspotEl);
+      if(explored[pi].size===PAGES[pi].hotspots.length){
+        setTimeout(showCeleb,1200);
+      }
+    },2800);
+  }
+}
+
+function flyToTaskBar(hs,hi,hotspotEl){
+  const hRect=hotspotEl.getBoundingClientRect();
+  const appRect=$('app').getBoundingClientRect();
+
+  const tempSlots=taskBar.querySelectorAll('.task-slot');
+  const targetSlot=tempSlots[hi];
+  const sRect=targetSlot.getBoundingClientRect();
+
+  const flyer=document.createElement('div');
+  flyer.className='flying-card';
+  flyer.textContent=hs.icon;
+  flyer.style.position='fixed';
+  flyer.style.left=(hRect.left-appRect.left+hRect.width/2-24)+'px';
+  flyer.style.top=(hRect.top-appRect.top+hRect.height/2-24)+'px';
+  flyer.style.transition='none';
+  $('app').appendChild(flyer);
+
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      flyer.style.transition='all 0.6s var(--motion-spring)';
+      flyer.style.left=(sRect.left-appRect.left+sRect.width/2-24)+'px';
+      flyer.style.top=(sRect.top-appRect.top+sRect.height/2-24)+'px';
+      flyer.style.width=sRect.width+'px';
+      flyer.style.height=sRect.height+'px';
+      flyer.style.fontSize='22px';
+    });
+  });
+
+  setTimeout(()=>{
+    flyer.remove();
+    renderTaskBar(currentPage);
+  },650);
+}
+
+function readPage(){
+  if(reading){stopReading();return}
+  reading=true;
+  readingPaused=false;
+  knowledgeDelay=0;
+  speakerBtn.classList.add('reading');
+  hideHotspots();
+  const page=PAGES[currentPage];
+  const wordEls=textContent.querySelectorAll('.text-word');
+  ttsCancel();
+
+  let delay=0;
+  const wd=800/speed;
+  page.words.forEach((w,i)=>{
+    setTimeout(()=>{
+      if(readingPaused)return;
+      wordEls.forEach(el=>{
+        el.classList.remove('highlighted');
+        if(parseInt(el.dataset.wi)<i)el.classList.add('read');
+      });
+      const cur=textContent.querySelector(`[data-wi="${i}"]`);
+      if(cur){
+        cur.classList.add('highlighted');
+      }
+      ttsSpeak(w);
+    },delay);
+    delay+=wd;
+  });
+  setTimeout(()=>{
+    wordEls.forEach(el=>{el.classList.remove('highlighted');el.classList.add('read')});
+    reading=false;
+    readingPaused=false;
+    speakerBtn.classList.remove('reading');
+    showHotspots();
+    if(autoTurn&&currentPage<PAGES.length-1){
+      const extraDelay=5000+knowledgeDelay;
+      readCompleteTimer=setTimeout(()=>goToPage(currentPage+1),extraDelay);
+    }
+  },delay+400);
+}
+
+function stopReading(){
+  reading=false;
+  readingPaused=false;
+  speakerBtn.classList.remove('reading');
+  ttsCancel();
+  textContent.querySelectorAll('.text-word').forEach(el=>{el.classList.remove('highlighted','read')});
+  clearAutoTimer();
+  if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
+  showHotspots();
+}
+
+function clearAutoTimer(){if(autoTimer){clearTimeout(autoTimer);autoTimer=null}}
+
+function goToPage(i){
+  if(i<0||i>=PAGES.length)return;
+  const direction=i>currentPage?'left':'right';
+  stopReading();
+  pageImg.classList.add(direction==='left'?'slide-out-left':'slide-out-right');
+  setTimeout(()=>{
+    pageImg.classList.remove('slide-out-left','slide-out-right');
+    renderPage(i);
+    pageImg.classList.add('slide-in');
+    setTimeout(()=>pageImg.classList.remove('slide-in'),500);
+  },300);
+}
+
+function showCeleb(){
+  celebLayer.classList.add('show');
+  launchConfetti();
+  setTimeout(hideCeleb,2500);
+}
+function hideCeleb(){celebLayer.classList.remove('show');confettiLayer.innerHTML=''}
+
+function launchConfetti(){
+  confettiLayer.innerHTML='';
+  const colors=['#E35B00','#5DC43B','#FCDA00','#33BBFF','#AE84E3','#FF7A99','#FFEB6B'];
+  for(let i=0;i<50;i++){
+    const p=document.createElement('div');
+    p.className='confetti';
+    p.style.left=Math.random()*100+'%';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.width=(5+Math.random()*7)+'px';
+    p.style.height=(5+Math.random()*7)+'px';
+    p.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    p.style.animationDuration=(1.5+Math.random()*2)+'s';
+    p.style.animationDelay=Math.random()*0.6+'s';
+    confettiLayer.appendChild(p);
+  }
+}
+
+function bindEvents(){
+  prevBtn.addEventListener('click',()=>goToPage(currentPage-1));
+  nextBtn.addEventListener('click',()=>goToPage(currentPage+1));
+  speakerBtn.addEventListener('click',()=>{
+    if(reading)stopReading();
+    else readPage();
+  });
+  settingsBtn.addEventListener('click',()=>settingsOverlay.classList.add('show'));
+  settingsDone.addEventListener('click',()=>settingsOverlay.classList.remove('show'));
+  settingsOverlay.addEventListener('click',e=>{if(e.target===settingsOverlay)settingsOverlay.classList.remove('show')});
+  document.querySelectorAll('.speed-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.speed-opt').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      speed=parseFloat(btn.dataset.speed);
+    });
+  });
+  autoToggle.addEventListener('click',()=>{
+    autoTurn=!autoTurn;
+    autoToggle.classList.toggle('on',autoTurn);
+    if(!autoTurn)clearAutoTimer();
+  });
+  bgmToggleEl.addEventListener('click',()=>{
+    toggleBgm(!bgmEnabled);
+    bgmToggleEl.classList.toggle('on',bgmEnabled);
+  });
+  knowledgeOverlay.addEventListener('click',e=>{
+    if(e.target===knowledgeOverlay)hideKnowledge();
+  });
+  pictureWrap.addEventListener('click',e=>{
+    if(!e.target.closest('.hotspot'))hideKnowledge();
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowLeft')goToPage(currentPage-1);
+    if(e.key==='ArrowRight')goToPage(currentPage+1);
+    if(e.key===' ')readPage();
+    if(e.key==='Escape')restartBook();
+  });
+}
+
+init();
+</script>
+</body>
+</html>
