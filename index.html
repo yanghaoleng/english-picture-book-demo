@@ -120,8 +120,8 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .top-controls{position:absolute;top:10px;right:10px;z-index:15;display:flex;gap:6px}
 .ctrl-btn{width:48px;height:48px;border:none;background:#fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform 0.15s,box-shadow 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
 .ctrl-btn:hover{transform:scale(1.1);box-shadow:0 3px 12px rgba(0,0,0,0.18)}
-.ctrl-btn img{width:28px;height:28px;pointer-events:none}
-.ctrl-btn .svg-icon{width:24px;height:24px}
+.ctrl-btn img{width:28px;height:28px;pointer-events:none;filter:brightness(0) saturate(100%) invert(77%) sepia(61%) saturate(538%) hue-rotate(359deg) brightness(101%) contrast(101%)}
+.ctrl-btn .svg-icon{width:24px;height:24px;filter:brightness(0) saturate(100%) invert(77%) sepia(61%) saturate(538%) hue-rotate(359deg) brightness(101%) contrast(101%)}
 
 .celeb-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:25;display:none;justify-content:center;align-items:center;pointer-events:none;background:rgba(0,0,0,0.45);opacity:0;transition:opacity 0.4s ease-out}
 .celeb-layer.show{display:flex}
@@ -149,8 +149,8 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
       <img class="page-img" id="pageImg" src="" alt="">
     </div>
     <button class="arrow-btn arrow-right" id="nextBtn"><img src="assets/UI/back.svg" alt="Next"></button>
+    <button class="ctrl-btn menu-btn" id="menuBtn" title="Settings" style="position:absolute;top:10px;left:10px;z-index:16"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FCDA00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
     <div class="top-controls" id="topControls">
-      <button class="ctrl-btn menu-btn" id="menuBtn" title="Settings"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FCDA00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
       <button class="ctrl-btn" id="autoBtn" title="Auto Page Turn"><img class="svg-icon" src="assets/UI/播放.svg" alt="Auto"></button>
       <button class="ctrl-btn" id="bgmBtn" title="Background Music"><img src="assets/UI/背景音乐开.svg" alt="BGM"></button>
     </div>
@@ -786,6 +786,26 @@ function bindEvents(){
   $('menuBtn').addEventListener('click',()=>{$('settingsOverlay').classList.add('show')});
   $('settingsDone').addEventListener('click',()=>{$('settingsOverlay').classList.remove('show')});
   $('settingsOverlay').addEventListener('click',e=>{if(e.target===$('settingsOverlay'))$('settingsOverlay').classList.remove('show')});
+  
+  // Theme options
+  document.querySelectorAll('#themeOpts .settings-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#themeOpts .settings-opt').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const theme=btn.dataset.theme;
+      currentTheme=theme;
+      document.body.setAttribute('data-theme',theme==='purple'?'purple':'');
+    });
+  });
+  
+  // TTS options
+  document.querySelectorAll('#ttsOpts .settings-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#ttsOpts .settings-opt').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      ttsMode=btn.dataset.tts;
+    });
+  });
   knowledgeOverlay.addEventListener('click',e=>{
     if(e.target===knowledgeOverlay)hideKnowledge(true);
   });
