@@ -6,6 +6,7 @@
 <title>I Want a Party!</title>
 <style>
 @font-face{font-family:'JojoABC';src:url('assets/font/JOJO ABC Medium.ttf') format('truetype');font-weight:400;font-style:normal}
+@font-face{font-family:'JojoABCEcard';src:url('assets/font/JOJO ABC Ecard.ttf') format('truetype');font-weight:400;font-style:normal}
 
 :root{
   --yellow-1:#FCF9DE;
@@ -20,6 +21,14 @@
   --motion-spring:cubic-bezier(0.34,1.56,0.64,1);
   --motion-standard:cubic-bezier(0.22,1,0.36,1);
   --safe-bottom:env(safe-area-inset-bottom, 0px);
+}
+[data-theme="purple"]{
+  --yellow-1:#F0E8FF;
+  --yellow-4:#9B6FE8;
+  --orange-4:#8B5CF6;
+  --orange-5:#7C3AED;
+  --brown-3:#C4B5D0;
+  --green-4:#7C6BC4;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -40,10 +49,7 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .arrow-right img{transform:scaleX(-1)}
 
 .picture-wrap{flex:1;display:flex;justify-content:center;align-items:center;position:relative;overflow:hidden;margin:0 60px}
-.page-img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none;transition:transform 0.5s var(--motion-spring),opacity 0.3s}
-.page-img.slide-out-left{transform:translateX(-100%);opacity:0}
-.page-img.slide-out-right{transform:translateX(100%);opacity:0}
-.page-img.slide-in{transform:translateX(0);opacity:1}
+.page-img{max-width:100%;max-height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
 
 .hotspot{position:absolute;width:45px;height:45px;cursor:pointer;z-index:10;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s}
 .hotspot.visible{opacity:1}
@@ -54,9 +60,9 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.6);opacity:0}}
 @keyframes stampIn{0%{transform:translate(-50%,-50%) scale(2.5);opacity:0}40%{transform:translate(-50%,-50%) scale(0.9);opacity:1}60%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
 
-.flying-card{position:absolute;z-index:30;width:48px;height:48px;border-radius:50%;border:3px solid #fff;background:var(--yellow-4);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 12px rgba(0,0,0,0.15);pointer-events:none;transition:all 0.6s var(--motion-spring)}
+.flying-card{position:absolute;z-index:30;width:44px;height:44px;border-radius:50%;border:3px solid #fff;background:var(--yellow-4);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 12px rgba(0,0,0,0.15);pointer-events:none;transition:all 0.6s var(--motion-spring)}
 
-.bottom-section{flex-shrink:0;display:flex;align-items:stretch;background:var(--yellow-1);padding-bottom:calc(44px + var(--safe-bottom))}
+.bottom-section{flex-shrink:0;display:flex;align-items:stretch;background:var(--yellow-1);padding-bottom:var(--safe-bottom)}
 
 .text-row{flex:1;display:flex;align-items:center;padding:20px 16px;gap:10px;min-height:128px}
 .speaker-btn{width:48px;height:48px;border:none;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform 0.15s,background 0.2s;border-radius:50%}
@@ -65,15 +71,38 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .speaker-btn.reading{background:var(--orange-4)}
 .speaker-btn.reading img{filter:none}
 
-.text-content{display:flex;align-items:center;gap:4px;flex:1;justify-content:flex-start}
+.text-content{display:flex;align-items:flex-start;gap:4px;flex:1;justify-content:flex-start;flex-wrap:wrap}
+.text-word-wrap{display:inline-flex;flex-direction:column;align-items:center}
 .text-word{font-family:'JojoABC',sans-serif;font-size:36px;color:var(--gray-6);display:inline-block;padding:1px 3px;transform-origin:50% 55%;will-change:transform,opacity}
 .text-word.highlighted{color:var(--orange-5)}
 .text-space{font-family:'JojoABC',sans-serif;font-size:36px;color:var(--gray-6)}
+.text-cn{font-family:'PingFang SC',system-ui,sans-serif;font-size:13px;color:var(--gray-4);line-height:1.2;margin-top:1px;white-space:nowrap;opacity:0;max-height:0;overflow:hidden;transition:opacity 0.25s,max-height 0.25s}
+.text-cn.show{opacity:1;max-height:24px}
 
-.task-bar{display:flex;align-items:center;gap:10px;padding:20px 16px 20px 80px;justify-content:flex-end}
-.task-slot{width:60px;height:60px;border-radius:50%;border:2.5px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
+.translate-btn{flex-shrink:0;align-self:center;margin-left:8px;border:none;background:none;color:var(--gray-4);font-family:'PingFang SC',system-ui,sans-serif;font-size:14px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:color 0.2s,background 0.2s;white-space:nowrap}
+.translate-btn:hover{color:var(--gray-6);background:rgba(0,0,0,0.04)}
+.translate-btn.active{color:var(--orange-5)}
+
+.task-bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:12px;padding:8px 20px;background:rgba(255,255,255,0.85);border-radius:40px;box-shadow:0 2px 12px rgba(0,0,0,0.1);backdrop-filter:blur(8px)}
+.task-slot{width:44px;height:44px;border-radius:50%;border:2.5px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
 .task-slot.filled{border:2px solid #fff;background:var(--yellow-4);box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;animation:slotPopIn 0.5s var(--motion-spring) forwards}
-.task-slot.filled .task-icon{font-size:33px}
+.task-slot.filled .task-icon{font-size:24px}
+.task-icon-hidden{font-family:'JojoABCEcard',sans-serif;font-size:22px;color:var(--brown-3);opacity:0.7}
+.menu-btn{position:absolute;top:10px;left:10px;z-index:16}
+
+.settings-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);z-index:40;display:none;justify-content:center;align-items:center;animation:overlayFadeIn 0.25s ease-out}
+.settings-overlay.show{display:flex}
+.settings-box{background:#fff;border-radius:24px;padding:32px 28px 24px;min-width:280px;box-shadow:0 12px 40px rgba(0,0,0,0.2);animation:knowledgePop 0.35s var(--motion-spring);display:flex;flex-direction:column;gap:20px}
+.settings-title{font-family:'JojoABC',sans-serif;font-size:22px;color:var(--gray-6);text-align:center;margin-bottom:4px}
+.settings-group{display:flex;flex-direction:column;gap:8px}
+.settings-label{font-family:'PingFang SC',system-ui,sans-serif;font-size:14px;color:var(--gray-4)}
+.settings-opts{display:flex;gap:8px}
+.settings-opt{flex:1;padding:10px 0;border:2px solid var(--gray-2);border-radius:12px;background:#fff;font-family:'PingFang SC',system-ui,sans-serif;font-size:14px;color:var(--gray-6);cursor:pointer;text-align:center;transition:all 0.2s}
+.settings-opt.active{border-color:var(--orange-5);background:var(--yellow-1);color:var(--orange-5);font-weight:600}
+.settings-opt:hover:not(.active){border-color:var(--gray-4)}
+.settings-done{width:100%;padding:12px;border:none;border-radius:14px;background:var(--orange-4);color:#fff;font-family:'JojoABC',sans-serif;font-size:16px;cursor:pointer;transition:transform 0.15s,opacity 0.2s;margin-top:4px}
+.settings-done:hover{transform:scale(1.02);opacity:0.9}
+
 @keyframes slotPopIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.25);opacity:1}100%{transform:scale(1);opacity:1}}
 
 .knowledge-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:35;display:none;justify-content:center;align-items:center;animation:overlayFadeIn 0.3s ease-out}
@@ -88,33 +117,20 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .knowledge-card-speak:hover{transform:scale(1.1)}
 @keyframes knowledgePop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
 
-.settings-btn{position:absolute;top:10px;right:10px;width:32px;height:32px;border:none;background:rgba(255,255,255,0.5);cursor:pointer;z-index:15;display:flex;align-items:center;justify-content:center;padding:0;border-radius:50%;transition:opacity 0.2s,transform 0.15s,background 0.2s}
-.settings-btn img{width:24px;height:24px}
-.settings-btn:hover{background:rgba(255,255,255,0.8);transform:scale(1.1)}
+.top-controls{position:absolute;top:10px;right:10px;z-index:15;display:flex;gap:6px}
+.ctrl-btn{width:48px;height:48px;border:none;background:#fff;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;transition:transform 0.15s,box-shadow 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.12)}
+.ctrl-btn:hover{transform:scale(1.1);box-shadow:0 3px 12px rgba(0,0,0,0.18)}
+.ctrl-btn img{width:28px;height:28px;pointer-events:none;filter:brightness(0) invert(78%) sepia(100%) saturate(520%) hue-rotate(3deg)}
+.ctrl-btn .svg-icon{width:24px;height:24px}
 
-.settings-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.35);z-index:40;display:none;justify-content:center;align-items:center}
-.settings-overlay.show{display:flex}
-.settings-box{background:#fff;border-radius:20px;padding:20px;width:260px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
-.settings-title{font-family:'JojoABC',sans-serif;font-size:16px;color:var(--gray-6);margin-bottom:14px;text-align:center}
-.settings-group{margin-bottom:14px}
-.settings-label{font-family:'JojoABC',sans-serif;font-size:13px;color:var(--gray-4);margin-bottom:6px;display:block}
-.speed-row{display:flex;gap:6px}
-.speed-opt{padding:6px 14px;border-radius:8px;border:2px solid var(--orange-5);background:#fff;color:var(--orange-5);font-family:'JojoABC',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s}
-.speed-opt.active{background:var(--orange-5);color:#fff}
-.toggle-row{display:flex;align-items:center;justify-content:space-between}
-.toggle-track{width:44px;height:24px;border-radius:12px;background:var(--gray-4);cursor:pointer;position:relative;transition:background 0.3s}
-.toggle-track.on{background:var(--green-4)}
-.toggle-thumb{width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.3s}
-.toggle-track.on .toggle-thumb{left:22px}
-.settings-done{width:100%;padding:8px;border-radius:10px;border:none;background:var(--orange-5);color:#fff;font-family:'JojoABC',sans-serif;font-size:14px;cursor:pointer;margin-top:6px}
-
-.celeb-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:25;display:none;justify-content:center;align-items:center;pointer-events:none}
+.celeb-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:25;display:none;justify-content:center;align-items:center;pointer-events:none;background:rgba(0,0,0,0.45);opacity:0;transition:opacity 0.4s ease-out}
 .celeb-layer.show{display:flex}
-.celeb-inner{display:flex;flex-direction:column;align-items:center;gap:12px;animation:celebPop 0.5s ease-out}
-.celeb-flower{font-size:176px;animation:flowerSpin 0.6s ease-out}
+.celeb-layer.visible{opacity:1;pointer-events:auto}
+.celeb-inner{display:flex;flex-direction:column;align-items:center;gap:12px;transform:translateY(100vh);opacity:0}
+.celeb-inner.pop-in{animation:celebBounceUp 0.6s var(--motion-spring) forwards}
+.celeb-icon{width:176px;height:176px}
 .celeb-text{font-family:'JojoABC',sans-serif;font-size:24px;color:var(--orange-5);background:rgba(255,255,255,0.95);padding:8px 24px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
-@keyframes celebPop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-@keyframes flowerSpin{0%{transform:scale(0) rotate(-180deg)}60%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1) rotate(0deg)}}
+@keyframes celebBounceUp{0%{transform:translateY(100vh);opacity:0}50%{transform:translateY(-20px);opacity:1}70%{transform:translateY(8px)}85%{transform:translateY(-4px)}100%{transform:translateY(0);opacity:1}}
 
 .confetti-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:24;pointer-events:none;overflow:hidden}
 .confetti{position:absolute;top:-10px;animation:confDrop linear forwards}
@@ -133,18 +149,23 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
       <img class="page-img" id="pageImg" src="" alt="">
     </div>
     <button class="arrow-btn arrow-right" id="nextBtn"><img src="assets/UI/back.svg" alt="Next"></button>
-    <button class="settings-btn" id="settingsBtn"><img src="assets/UI/setting.svg" alt="Settings"></button>
+    <div class="top-controls" id="topControls">
+      <button class="ctrl-btn menu-btn" id="menuBtn" title="Settings"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+      <button class="ctrl-btn" id="autoBtn" title="Auto Page Turn"><img class="svg-icon" src="assets/UI/播放.svg" alt="Auto"></button>
+      <button class="ctrl-btn" id="bgmBtn" title="Background Music"><img src="assets/UI/背景音乐开.png" alt="BGM"></button>
+    </div>
+    <div class="task-bar" id="taskBar"></div>
   </div>
   <div class="bottom-section">
     <div class="text-row">
       <button class="speaker-btn" id="speakerBtn"><img src="assets/UI/speck.svg" alt="Read"></button>
       <div class="text-content" id="textContent"></div>
+      <button class="translate-btn" id="translateBtn">翻译</button>
     </div>
-    <div class="task-bar" id="taskBar"></div>
   </div>
   <div class="celeb-layer" id="celebLayer">
     <div class="celeb-inner">
-      <div class="celeb-flower">🌸</div>
+      <img class="celeb-icon" src="assets/UI/good.png" alt="Good">
       <div class="celeb-text">Great job!</div>
     </div>
   </div>
@@ -160,27 +181,17 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
     <div class="settings-box">
       <div class="settings-title">Settings</div>
       <div class="settings-group">
-        <span class="settings-label">Reading Speed</span>
-        <div class="speed-row">
-          <button class="speed-opt" data-speed="0.6">Slow</button>
-          <button class="speed-opt active" data-speed="0.85">Normal</button>
-          <button class="speed-opt" data-speed="1.2">Fast</button>
+        <span class="settings-label">Color Theme</span>
+        <div class="settings-opts" id="themeOpts">
+          <button class="settings-opt active" data-theme="yellow">🟡 Yellow</button>
+          <button class="settings-opt" data-theme="purple">🟣 Purple</button>
         </div>
       </div>
       <div class="settings-group">
-        <div class="toggle-row">
-          <span class="settings-label">Auto Page Turn</span>
-          <div class="toggle-track on" id="autoToggle">
-            <div class="toggle-thumb"></div>
-          </div>
-        </div>
-      </div>
-      <div class="settings-group">
-        <div class="toggle-row">
-          <span class="settings-label">Background Music</span>
-          <div class="toggle-track on" id="bgmToggle">
-            <div class="toggle-thumb"></div>
-          </div>
+        <span class="settings-label">Voice Style</span>
+        <div class="settings-opts" id="ttsOpts">
+          <button class="settings-opt active" data-tts="animalese">🐾 Animalese</button>
+          <button class="settings-opt" data-tts="local">🔊 Local Audio</button>
         </div>
       </div>
       <button class="settings-done" id="settingsDone">Done</button>
@@ -210,12 +221,80 @@ let autoTimer=null;
 let bgmAudio=null;
 let bgmEnabled=true;
 let knowledgeShowing=false;
-let knowledgeDelay=0;
+let celebShowing=false;
 let readCompleteTimer=null;
 let ttsVoice=null;
 let ttsReady=false;
 let knowledgeSourceEl=null;
 let knowledgeExitAnim=null;
+let showTranslation=false;
+let ttsMode='animalese';
+let currentTheme='yellow';
+
+class AnimaleseEngine{
+  constructor(){
+    this.ctx=null;
+    this.basePitch=420;
+    this.pitchRange=280;
+    this.letterDuration=0.075;
+    this.volume=0.18;
+  }
+  init(){
+    if(this.ctx)return;
+    this.ctx=new(window.AudioContext||window.webkitAudioContext)();
+  }
+  speak(text){
+    this.init();
+    if(this.ctx.state==='suspended')this.ctx.resume();
+    const letters=text.toLowerCase().replace(/[^a-z ]/g,'').split('');
+    let time=this.ctx.currentTime+0.02;
+    letters.forEach(l=>{
+      if(l>='a'&&l<='z'){
+        this._playLetter(l,time);
+        time+=this.letterDuration;
+      }else if(l===' '){
+        time+=0.04;
+      }
+    });
+    const dur=(time-this.ctx.currentTime)*1000+50;
+    return new Promise(r=>setTimeout(r,dur));
+  }
+  _playLetter(ch,t){
+    const idx=ch.charCodeAt(0)-97;
+    const pitch=this.basePitch+(idx/25)*this.pitchRange;
+    const rp=pitch+(Math.random()-0.5)*80;
+    const osc=this.ctx.createOscillator();
+    const gain=this.ctx.createGain();
+    const osc2=this.ctx.createOscillator();
+    const gain2=this.ctx.createGain();
+    osc.type='square';
+    osc.frequency.setValueAtTime(rp,t);
+    gain.gain.setValueAtTime(0,t);
+    gain.gain.linearRampToValueAtTime(this.volume,t+0.003);
+    gain.gain.exponentialRampToValueAtTime(0.001,t+this.letterDuration);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t+this.letterDuration);
+    osc2.type='sawtooth';
+    osc2.frequency.setValueAtTime(rp*1.01,t);
+    gain2.gain.setValueAtTime(0,t);
+    gain2.gain.linearRampToValueAtTime(this.volume*0.4,t+0.003);
+    gain2.gain.exponentialRampToValueAtTime(0.001,t+this.letterDuration);
+    osc2.connect(gain2);
+    gain2.connect(this.ctx.destination);
+    osc2.start(t);
+    osc2.stop(t+this.letterDuration);
+  }
+  stop(){
+    if(this.ctx&&this.ctx.state!=='closed'){
+      this.ctx.close();
+      this.ctx=null;
+    }
+  }
+}
+const animalese=new AnimaleseEngine();
+const TRANSLATIONS={'I':'我','want':'想要','a':'一个','party':'派对','some':'一些','cards':'卡片','gifts':'礼物','balloons':'气球','cupcakes':'杯子蛋糕','toys':'玩具','time':'时间','Party':'派对','Thank':'谢谢','you':'你','Elephant':'大象'};
 
 const $=id=>document.getElementById(id);
 const pageImg=$('pageImg');
@@ -225,11 +304,8 @@ const taskBar=$('taskBar');
 const prevBtn=$('prevBtn');
 const nextBtn=$('nextBtn');
 const speakerBtn=$('speakerBtn');
-const settingsBtn=$('settingsBtn');
-const settingsOverlay=$('settingsOverlay');
-const settingsDone=$('settingsDone');
-const autoToggle=$('autoToggle');
-const bgmToggleEl=$('bgmToggle');
+const autoBtn=$('autoBtn');
+const bgmBtn=$('bgmBtn');
 const celebLayer=$('celebLayer');
 const confettiLayer=$('confettiLayer');
 const knowledgeOverlay=$('knowledgeOverlay');
@@ -245,41 +321,50 @@ function initTTS(){
     ttsReady=true;
     const en=voices.filter(v=>v.lang.startsWith('en'));
     if(!en.length){ttsVoice=null;return}
-    const names=['Samantha','Victoria','Karen','Moira','Ava','Allison','Google US English','Microsoft Zira'];
-    for(const n of names){
-      const v=en.find(v=>v.name.includes(n));
-      if(v){ttsVoice=v;return}
+    const preferred=['Samantha','Karen','Victoria','Moira','Ava','Google US English','Microsoft Zira'];
+    for(const name of preferred){
+      const found=en.find(v=>v.name.includes(name));
+      if(found){ttsVoice=found;return}
     }
-    const us=en.find(v=>v.lang==='en-US');
-    ttsVoice=us||en[0];
+    ttsVoice=en.find(v=>v.lang==='en-US')||en[0];
   }
   loadVoices();
   speechSynthesis.onvoiceschanged=loadVoices;
 }
 
 function ttsSpeak(text){
-  if(!ttsReady){
-    speechSynthesis.getVoices();
+  if(ttsMode==='animalese'){
+    return animalese.speak(text);
   }
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='en-US';
-  u.rate=speed;
-  u.pitch=1.0;
-  u.volume=1.0;
-  if(ttsVoice)u.voice=ttsVoice;
-  speechSynthesis.speak(u);
+  return new Promise(resolve=>{
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-US';
+    u.rate=speed;
+    u.pitch=1;
+    u.volume=1;
+    if(ttsVoice)u.voice=ttsVoice;
+    u.onend=()=>resolve();
+    u.onerror=()=>resolve();
+    setTimeout(()=>speechSynthesis.speak(u),50);
+  });
 }
 
-function ttsCancel(){
+function ttsStop(){
+  if(ttsMode==='animalese'){
+    animalese.stop();
+    return;
+  }
   speechSynthesis.cancel();
 }
 
-function ttsPause(){
-  speechSynthesis.pause();
-}
-
-function ttsResume(){
-  speechSynthesis.resume();
+function toggleTranslation(){
+  showTranslation=!showTranslation;
+  const btn=$('translateBtn');
+  btn.textContent=showTranslation?'隐藏翻译':'翻译';
+  btn.classList.toggle('active',showTranslation);
+  textContent.querySelectorAll('.text-cn').forEach(el=>{
+    el.classList.toggle('show',showTranslation);
+  });
 }
 
 function animateTextEntry(){
@@ -332,8 +417,16 @@ function hideHotspots(){
   });
 }
 
+function preloadImages(){
+  PAGES.forEach(p=>{
+    const img=new Image();
+    img.src=p.image;
+  });
+}
+
 function init(){
   PAGES.forEach((_,i)=>{explored[i]=new Set()});
+  preloadImages();
   initTTS();
   renderPage(0);
   bindEvents();
@@ -358,7 +451,7 @@ function renderPage(idx){
   clearAutoTimer();
   reading=false;
   readingPaused=false;
-  knowledgeDelay=0;
+  celebShowing=false;
   if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
   speakerBtn.classList.remove('reading');
 
@@ -368,11 +461,19 @@ function renderPage(idx){
 
   textContent.innerHTML='';
   page.words.forEach((w,i)=>{
+    const wrap=document.createElement('span');
+    wrap.className='text-word-wrap';
     const span=document.createElement('span');
     span.className='text-word';
     span.textContent=w;
     span.dataset.wi=i;
-    textContent.appendChild(span);
+    wrap.appendChild(span);
+    const cn=document.createElement('span');
+    cn.className='text-cn';
+    cn.textContent=TRANSLATIONS[w]||'';
+    if(showTranslation)cn.classList.add('show');
+    wrap.appendChild(cn);
+    textContent.appendChild(wrap);
     if(i<page.words.length-1){
       const sp=document.createElement('span');
       sp.className='text-space';
@@ -419,15 +520,22 @@ function renderTaskBar(idx){
       slot.appendChild(icon);
       slot.addEventListener('click',e=>{
         e.stopPropagation();
-        showKnowledge(hs);
+        showKnowledge(hs,slot);
       });
+    }else{
+      const q=document.createElement('span');
+      q.className='task-icon task-icon-hidden';
+      q.textContent='?';
+      slot.appendChild(q);
     }
     taskBar.appendChild(slot);
   });
 }
 
-function showKnowledge(hs){
+function showKnowledge(hs,sourceEl){
+  if(knowledgeExitAnim){knowledgeExitAnim.cancel();knowledgeExitAnim=null}
   knowledgeShowing=true;
+  knowledgeSourceEl=sourceEl||null;
   knowledgeIcon.textContent=hs.icon;
   knowledgeWord.textContent=hs.word;
   knowledgeOverlay.classList.add('show');
@@ -435,36 +543,58 @@ function showKnowledge(hs){
 
   if(reading&&!readingPaused){
     readingPaused=true;
-    ttsPause();
+    ttsStop();
   }
 
   setTimeout(()=>ttsSpeak(hs.word),1000);
 }
 
-function hideKnowledge(){
+function hideKnowledge(animated){
+  if(!knowledgeShowing)return;
   knowledgeShowing=false;
-  knowledgeOverlay.classList.remove('show');
-
-  if(readingPaused){
-    readingPaused=false;
-    ttsResume();
+  if(animated&&knowledgeSourceEl){
+    const sourceRect=knowledgeSourceEl.getBoundingClientRect();
+    const cardRect=knowledgeCard.getBoundingClientRect();
+    const dx=sourceRect.left+sourceRect.width/2-(cardRect.left+cardRect.width/2);
+    const dy=sourceRect.top+sourceRect.height/2-(cardRect.top+cardRect.height/2);
+    const cardAnim=knowledgeCard.animate([
+      {transform:'translate(0,0) scale(1)',opacity:1},
+      {transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}
+    ],{duration:650,easing:'cubic-bezier(0.22,1,0.36,1)',fill:'both'});
+    const overlayAnim=knowledgeOverlay.animate([
+      {opacity:1},{opacity:0}
+    ],{duration:550,easing:'ease-out',fill:'both'});
+    knowledgeExitAnim=cardAnim;
+    cardAnim.onfinish=()=>{
+      knowledgeExitAnim=null;
+      knowledgeSourceEl=null;
+      knowledgeOverlay.classList.remove('show');
+      cardAnim.cancel();
+      overlayAnim.cancel();
+      if(readingPaused){readingPaused=false}
+      scheduleAutoTurn();
+    };
+  }else{
+    if(knowledgeExitAnim){knowledgeExitAnim.cancel();knowledgeExitAnim=null}
+    knowledgeSourceEl=null;
+    knowledgeOverlay.classList.remove('show');
+    if(readingPaused){readingPaused=false}
+    scheduleAutoTurn();
   }
-
-  knowledgeDelay+=3000;
 }
 
 function onHotspot(pi,hi,hs,hotspotEl){
   const wasExplored=explored[pi].has(hi);
   explored[pi].add(hi);
 
-  showKnowledge(hs);
+  showKnowledge(hs,hotspotEl);
 
   if(!wasExplored){
     setTimeout(()=>{
-      hideKnowledge();
+      hideKnowledge(true);
       flyToTaskBar(hs,hi,hotspotEl);
       if(explored[pi].size===PAGES[pi].hotspots.length){
-        setTimeout(showCeleb,1200);
+        setTimeout(showCeleb,3000);
       }
     },2800);
   }
@@ -482,16 +612,16 @@ function flyToTaskBar(hs,hi,hotspotEl){
   flyer.className='flying-card';
   flyer.textContent=hs.icon;
   flyer.style.position='fixed';
-  flyer.style.left=(hRect.left-appRect.left+hRect.width/2-24)+'px';
-  flyer.style.top=(hRect.top-appRect.top+hRect.height/2-24)+'px';
+  flyer.style.left=(hRect.left-appRect.left+hRect.width/2-22)+'px';
+  flyer.style.top=(hRect.top-appRect.top+hRect.height/2-22)+'px';
   flyer.style.transition='none';
   $('app').appendChild(flyer);
 
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       flyer.style.transition='all 0.6s var(--motion-spring)';
-      flyer.style.left=(sRect.left-appRect.left+sRect.width/2-24)+'px';
-      flyer.style.top=(sRect.top-appRect.top+sRect.height/2-24)+'px';
+      flyer.style.left=(sRect.left-appRect.left+sRect.width/2-22)+'px';
+      flyer.style.top=(sRect.top-appRect.top+sRect.height/2-22)+'px';
       flyer.style.width=sRect.width+'px';
       flyer.style.height=sRect.height+'px';
       flyer.style.fontSize='22px';
@@ -508,12 +638,11 @@ function readPage(){
   if(reading){stopReading();return}
   reading=true;
   readingPaused=false;
-  knowledgeDelay=0;
   speakerBtn.classList.add('reading');
   hideHotspots();
   const page=PAGES[currentPage];
   const wordEls=textContent.querySelectorAll('.text-word');
-  ttsCancel();
+  ttsStop();
 
   let delay=0;
   const wd=800/speed;
@@ -538,10 +667,7 @@ function readPage(){
     readingPaused=false;
     speakerBtn.classList.remove('reading');
     showHotspots();
-    if(autoTurn&&currentPage<PAGES.length-1){
-      const extraDelay=5000+knowledgeDelay;
-      readCompleteTimer=setTimeout(()=>goToPage(currentPage+1),extraDelay);
-    }
+    scheduleAutoTurn();
   },delay+400);
 }
 
@@ -549,7 +675,7 @@ function stopReading(){
   reading=false;
   readingPaused=false;
   speakerBtn.classList.remove('reading');
-  ttsCancel();
+  ttsStop();
   textContent.querySelectorAll('.text-word').forEach(el=>{el.classList.remove('highlighted','read')});
   clearAutoTimer();
   if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
@@ -558,25 +684,68 @@ function stopReading(){
 
 function clearAutoTimer(){if(autoTimer){clearTimeout(autoTimer);autoTimer=null}}
 
+function scheduleAutoTurn(){
+  if(!autoTurn||currentPage>=PAGES.length-1)return;
+  if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
+  if(reading||knowledgeShowing||celebShowing)return;
+  if(explored[currentPage].size<PAGES[currentPage].hotspots.length)return;
+  readCompleteTimer=setTimeout(()=>{
+    if(reading||knowledgeShowing||celebShowing||explored[currentPage].size<PAGES[currentPage].hotspots.length){scheduleAutoTurn();return}
+    goToPage(currentPage+1);
+  },3000);
+}
+
 function goToPage(i){
   if(i<0||i>=PAGES.length)return;
-  const direction=i>currentPage?'left':'right';
   stopReading();
-  pageImg.classList.add(direction==='left'?'slide-out-left':'slide-out-right');
-  setTimeout(()=>{
-    pageImg.classList.remove('slide-out-left','slide-out-right');
+  pageImg.getAnimations().forEach(a=>a.cancel());
+  pageImg.style.transform='';
+  pageImg.style.opacity='';
+  const EASING='cubic-bezier(0.22,1,0.36,1)';
+  const DURATION=550;
+  const exitAnim=pageImg.animate([
+    {transform:'translateX(0)',opacity:1},
+    {transform:'translateX(-100%)',opacity:0}
+  ],{duration:DURATION,easing:EASING,fill:'forwards'});
+  exitAnim.onfinish=()=>{
     renderPage(i);
-    pageImg.classList.add('slide-in');
-    setTimeout(()=>pageImg.classList.remove('slide-in'),500);
-  },300);
+    const enterAnim=pageImg.animate([
+      {transform:'translateX(100%)',opacity:0},
+      {transform:'translateX(0)',opacity:1}
+    ],{duration:DURATION,easing:EASING});
+    enterAnim.onfinish=()=>{
+      pageImg.getAnimations().forEach(a=>a.cancel());
+      pageImg.style.transform='';
+      pageImg.style.opacity='';
+    };
+  };
 }
 
 function showCeleb(){
+  celebShowing=true;
   celebLayer.classList.add('show');
   launchConfetti();
   setTimeout(hideCeleb,2500);
 }
-function hideCeleb(){celebLayer.classList.remove('show');confettiLayer.innerHTML=''}
+function hideCeleb(){
+  const inner=celebLayer.querySelector('.celeb-inner');
+  if(inner){
+    inner.animate([
+      {transform:'scale(1) rotate(0deg)',opacity:1},
+      {transform:'scale(0.3) rotate(180deg)',opacity:0}
+    ],{duration:400,easing:'cubic-bezier(0.55,0,1,0.45)',fill:'both'}).onfinish=()=>{
+      celebShowing=false;
+      celebLayer.classList.remove('show');
+      confettiLayer.innerHTML='';
+      scheduleAutoTurn();
+    };
+  }else{
+    celebShowing=false;
+    celebLayer.classList.remove('show');
+    confettiLayer.innerHTML='';
+    scheduleAutoTurn();
+  }
+}
 
 function launchConfetti(){
   confettiLayer.innerHTML='';
@@ -602,35 +771,30 @@ function bindEvents(){
     if(reading)stopReading();
     else readPage();
   });
-  settingsBtn.addEventListener('click',()=>settingsOverlay.classList.add('show'));
-  settingsDone.addEventListener('click',()=>settingsOverlay.classList.remove('show'));
-  settingsOverlay.addEventListener('click',e=>{if(e.target===settingsOverlay)settingsOverlay.classList.remove('show')});
-  document.querySelectorAll('.speed-opt').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.speed-opt').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      speed=parseFloat(btn.dataset.speed);
-    });
-  });
-  autoToggle.addEventListener('click',()=>{
+  autoBtn.addEventListener('click',()=>{
     autoTurn=!autoTurn;
-    autoToggle.classList.toggle('on',autoTurn);
+    autoBtn.querySelector('img').src=autoTurn?'assets/UI/播放.svg':'assets/UI/暂停.svg';
     if(!autoTurn)clearAutoTimer();
   });
-  bgmToggleEl.addEventListener('click',()=>{
+  bgmBtn.addEventListener('click',()=>{
     toggleBgm(!bgmEnabled);
-    bgmToggleEl.classList.toggle('on',bgmEnabled);
+    bgmBtn.querySelector('img').src=bgmEnabled?'assets/UI/背景音乐开.png':'assets/UI/背景音乐关.png';
   });
+  $('translateBtn').addEventListener('click',toggleTranslation);
   knowledgeOverlay.addEventListener('click',e=>{
-    if(e.target===knowledgeOverlay)hideKnowledge();
+    if(e.target===knowledgeOverlay)hideKnowledge(true);
   });
   pictureWrap.addEventListener('click',e=>{
-    if(!e.target.closest('.hotspot'))hideKnowledge();
+    if(!e.target.closest('.hotspot'))hideKnowledge(true);
   });
   document.addEventListener('keydown',e=>{
-    if(e.key==='ArrowLeft')goToPage(currentPage-1);
-    if(e.key==='ArrowRight')goToPage(currentPage+1);
-    if(e.key===' ')readPage();
+    if(e.key==='ArrowLeft'){e.preventDefault();goToPage(currentPage-1)}
+    if(e.key==='ArrowRight'){e.preventDefault();goToPage(currentPage+1)}
+    if(e.key===' '){e.preventDefault();readPage()}
+    if(e.key==='m'||e.key==='M'){
+      toggleBgm(!bgmEnabled);
+      bgmBtn.querySelector('img').src=bgmEnabled?'assets/UI/背景音乐开.png':'assets/UI/背景音乐关.png';
+    }
     if(e.key==='Escape')restartBook();
   });
 }
