@@ -84,6 +84,8 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .text-space{font-family:'JojoABC',sans-serif;font-size:36px;color:var(--gray-6)}
 .text-cn{font-family:'PingFang SC',system-ui,sans-serif;font-size:13px;color:var(--gray-4);line-height:1.2;margin-top:1px;white-space:nowrap;opacity:0;max-height:0;overflow:hidden;transition:opacity 0.25s,max-height 0.25s}
 .text-cn.show{opacity:1;max-height:24px}
+.text-sentence-cn{flex:0 0 100%;font-family:'PingFang SC',system-ui,sans-serif;font-size:17px;color:var(--gray-3);line-height:1.35;padding-left:3px;margin-top:3px;opacity:0;max-height:0;overflow:hidden;transition:opacity 0.25s,max-height 0.25s}
+.text-sentence-cn.show{opacity:1;max-height:30px}
 
 .translate-btn{flex-shrink:0;align-self:center;margin-left:8px;border:none;background:none;color:var(--gray-4);font-family:'PingFang SC',system-ui,sans-serif;font-size:14px;cursor:pointer;padding:6px 10px;border-radius:8px;transition:color 0.2s,background 0.2s;white-space:nowrap}
 .translate-btn:hover{color:var(--gray-6);background:rgba(0,0,0,0.04)}
@@ -258,6 +260,13 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
           </div>
         </div>
         <div class="settings-group">
+          <span class="settings-label">翻译方式</span>
+          <div class="settings-opts" id="translationModeOpts">
+            <button class="settings-opt active" data-translation-mode="word">🔤 逐词</button>
+            <button class="settings-opt" data-translation-mode="sentence">💬 整句</button>
+          </div>
+        </div>
+        <div class="settings-group">
           <div class="settings-label-row">
             <span class="settings-label">卡片入场</span>
             <div class="entry-effect-status">
@@ -286,14 +295,14 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 <script src="assets/vendor/gsap.min.js"></script>
 <script>
 const PAGES=[
-  {image:'assets/内页01.webp',video:'assets/内页01.mp4',text:'I want a party.',words:['I','want','a','party'],hotspots:[{x:50,y:45,word:'party',icon:'assets/知识点/party.png'}]},
-  {image:'assets/内页02.webp',text:'I want some cards.',words:['I','want','some','cards'],hotspots:[{x:30,y:50,word:'cards',icon:'assets/知识点/Cards.png'},{x:65,y:45,word:'cards',icon:'assets/知识点/Cards.png'}]},
-  {image:'assets/内页03.webp',text:'I want some gifts.',words:['I','want','some','gifts'],hotspots:[{x:35,y:50,word:'gifts',icon:'assets/知识点/Gifts.png'},{x:65,y:48,word:'gifts',icon:'assets/知识点/Gifts.png'}]},
-  {image:'assets/内页04.webp',text:'I want some balloons.',words:['I','want','some','balloons'],hotspots:[{x:25,y:35,word:'balloons',icon:'assets/知识点/balloons.png'},{x:50,y:30,word:'balloons',icon:'assets/知识点/balloons.png'},{x:75,y:38,word:'balloons',icon:'assets/知识点/balloons.png'}]},
-  {image:'assets/内页05.webp',text:'I want some cupcakes.',words:['I','want','some','cupcakes'],hotspots:[{x:30,y:55,word:'cupcakes',icon:'assets/知识点/cupcakes.png'},{x:55,y:52,word:'cupcakes',icon:'assets/知识点/cupcakes.png'},{x:75,y:58,word:'cupcakes',icon:'assets/知识点/cupcakes.png'}]},
-  {image:'assets/内页06.webp',text:'I want some toys.',words:['I','want','some','toys'],hotspots:[{x:25,y:50,word:'toys',icon:'assets/知识点/toys.png'},{x:50,y:48,word:'toys',icon:'assets/知识点/toys.png'},{x:75,y:52,word:'toys',icon:'assets/知识点/toys.png'}]},
-  {image:'assets/内页07.webp',text:'Party time!',words:['Party','time'],hotspots:[{x:50,y:50,word:'party',icon:'assets/知识点/party.png'}]},
-  {image:'assets/内页08.webp',text:'Thank you, Elephant.',words:['Thank','you','Elephant'],hotspots:[{x:50,y:50,word:'elephant',icon:'assets/知识点/elephant.png'}]}
+  {image:'assets/内页01.webp',video:'assets/内页01.mp4',text:'I want a party.',translation:'我想要一个派对。',words:['I','want','a','party'],hotspots:[{x:50,y:45,word:'party',icon:'assets/知识点/party.png'}]},
+  {image:'assets/内页02.webp',text:'I want some cards.',translation:'我想要一些卡片。',words:['I','want','some','cards'],hotspots:[{x:30,y:50,word:'cards',icon:'assets/知识点/Cards.png'},{x:65,y:45,word:'cards',icon:'assets/知识点/Cards.png'}]},
+  {image:'assets/内页03.webp',text:'I want some gifts.',translation:'我想要一些礼物。',words:['I','want','some','gifts'],hotspots:[{x:35,y:50,word:'gifts',icon:'assets/知识点/Gifts.png'},{x:65,y:48,word:'gifts',icon:'assets/知识点/Gifts.png'}]},
+  {image:'assets/内页04.webp',text:'I want some balloons.',translation:'我想要一些气球。',words:['I','want','some','balloons'],hotspots:[{x:25,y:35,word:'balloons',icon:'assets/知识点/balloons.png'},{x:50,y:30,word:'balloons',icon:'assets/知识点/balloons.png'},{x:75,y:38,word:'balloons',icon:'assets/知识点/balloons.png'}]},
+  {image:'assets/内页05.webp',text:'I want some cupcakes.',translation:'我想要一些杯子蛋糕。',words:['I','want','some','cupcakes'],hotspots:[{x:30,y:55,word:'cupcakes',icon:'assets/知识点/cupcakes.png'},{x:55,y:52,word:'cupcakes',icon:'assets/知识点/cupcakes.png'},{x:75,y:58,word:'cupcakes',icon:'assets/知识点/cupcakes.png'}]},
+  {image:'assets/内页06.webp',text:'I want some toys.',translation:'我想要一些玩具。',words:['I','want','some','toys'],hotspots:[{x:25,y:50,word:'toys',icon:'assets/知识点/toys.png'},{x:50,y:48,word:'toys',icon:'assets/知识点/toys.png'},{x:75,y:52,word:'toys',icon:'assets/知识点/toys.png'}]},
+  {image:'assets/内页07.webp',text:'Party time!',translation:'派对时间到了！',words:['Party','time'],hotspots:[{x:50,y:50,word:'party',icon:'assets/知识点/party.png'}]},
+  {image:'assets/内页08.webp',text:'Thank you, Elephant.',translation:'谢谢你，大象。',words:['Thank','you','Elephant'],hotspots:[{x:50,y:50,word:'elephant',icon:'assets/知识点/elephant.png'}]}
 ];
 
 const knowledgeKey=word=>word.toLowerCase();
@@ -336,6 +345,7 @@ const SCRATCH_BRUSH=32;
 const SCRATCH_THRESHOLD=0.3;
 let pendingRevealCallback=null;
 let showTranslation=false;
+let translationMode='word';
 let ttsMode='browser';
 let currentTheme='yellow';
 let collectionMode='book';
@@ -688,14 +698,26 @@ function ttsStop(){
   speechSynthesis.cancel();
 }
 
-function toggleTranslation(){
-  showTranslation=!showTranslation;
+function updateTranslateButton(){
   const btn=$('translateBtn');
   btn.textContent=showTranslation?'隐藏翻译':'翻译';
   btn.classList.toggle('active',showTranslation);
+}
+
+function applyTranslationVisibility(){
+  const showWords=showTranslation&&translationMode==='word';
+  const showSentence=showTranslation&&translationMode==='sentence';
   textContent.querySelectorAll('.text-cn').forEach(el=>{
-    el.classList.toggle('show',showTranslation);
+    el.classList.toggle('show',showWords);
   });
+  const sentenceEl=textContent.querySelector('.text-sentence-cn');
+  if(sentenceEl)sentenceEl.classList.toggle('show',showSentence);
+  updateTranslateButton();
+}
+
+function toggleTranslation(){
+  showTranslation=!showTranslation;
+  applyTranslationVisibility();
   if(showTranslation){hideHotspots()}else{showHotspots()}
 }
 
@@ -738,6 +760,7 @@ function toggleBgm(on){
 }
 
 function showHotspots(){
+  if(showTranslation)return;
   pictureWrap.querySelectorAll('.hotspot').forEach(el=>{
     el.classList.add('visible','stamp-in');
   });
@@ -825,7 +848,6 @@ function renderPage(idx){
     const cn=document.createElement('span');
     cn.className='text-cn';
     cn.textContent=TRANSLATIONS[w]||'';
-    if(showTranslation)cn.classList.add('show');
     wrap.appendChild(cn);
     textContent.appendChild(wrap);
     if(i<page.words.length-1){
@@ -835,6 +857,11 @@ function renderPage(idx){
       textContent.appendChild(sp);
     }
   });
+  const sentenceCn=document.createElement('span');
+  sentenceCn.className='text-sentence-cn';
+  sentenceCn.textContent=page.translation||'';
+  textContent.appendChild(sentenceCn);
+  applyTranslationVisibility();
 
   animateTextEntry();
 
@@ -1415,6 +1442,17 @@ function bindEvents(){
       document.querySelectorAll('#ttsOpts .settings-opt').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
       ttsMode=btn.dataset.tts;
+    });
+  });
+
+  document.querySelectorAll('#translationModeOpts .settings-opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      playSfx('btn');
+      document.querySelectorAll('#translationModeOpts .settings-opt').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      translationMode=btn.dataset.translationMode;
+      applyTranslationVisibility();
+      if(showTranslation)hideHotspots();
     });
   });
   knowledgeOverlay.addEventListener('click',e=>{
