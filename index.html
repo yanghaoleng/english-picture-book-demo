@@ -151,6 +151,24 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .knowledge-card.anim-flip{animation:knowledgeFlip 0.55s cubic-bezier(0.22,1,0.36,1) both}
 .knowledge-card.anim-drop{animation:knowledgeDrop 0.55s cubic-bezier(0.22,1,0.36,1) both}
 .scratch-canvas{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:32px;z-index:5;touch-action:none;cursor:grab}
+.pack-opener{position:absolute;inset:0;z-index:6;display:none;border-radius:32px;overflow:hidden;touch-action:none;cursor:grab;user-select:none;transform-style:preserve-3d;background:linear-gradient(145deg,#7BDFF2 0%,#B2F7EF 28%,#FFE66D 58%,#FF8FAB 100%)}
+.pack-opener.show{display:block}
+.pack-opener::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 20%,rgba(255,255,255,0.75),transparent 18%),radial-gradient(circle at 78% 22%,rgba(255,255,255,0.5),transparent 16%),linear-gradient(120deg,transparent 0 38%,rgba(255,255,255,0.34) 39% 45%,transparent 46% 100%);opacity:0.82;pointer-events:none}
+.pack-body{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;border:4px solid rgba(255,255,255,0.78);border-radius:32px;box-shadow:inset 0 0 0 3px rgba(75,59,37,0.08),inset 0 -34px 70px rgba(75,59,37,0.12)}
+.pack-emblem{position:relative;width:150px;height:150px;border-radius:34px;background:rgba(255,255,255,0.78);box-shadow:0 12px 30px rgba(75,59,37,0.14);display:flex;align-items:center;justify-content:center;color:var(--orange-5);font-family:'JojoABCEcard','JojoABC',sans-serif;font-size:92px;line-height:1}
+.pack-emblem::before,.pack-emblem::after{content:"";position:absolute;border-radius:999px;background:var(--yellow-4);opacity:0.9}
+.pack-emblem::before{width:44px;height:9px;top:28px;left:24px;transform:rotate(-24deg)}
+.pack-emblem::after{width:58px;height:10px;right:22px;bottom:31px;transform:rotate(-18deg)}
+.pack-top-left,.pack-top-right{position:absolute;top:0;width:50.5%;height:34%;background:linear-gradient(160deg,#FF8FAB 0%,#FFE66D 52%,#7BDFF2 100%);border-bottom:3px dashed rgba(255,255,255,0.85);box-shadow:0 12px 24px rgba(75,59,37,0.14);transform-origin:50% 0;will-change:transform,opacity}
+.pack-top-left{left:0;border-right:1px solid rgba(255,255,255,0.5)}
+.pack-top-right{right:0;border-left:1px solid rgba(255,255,255,0.5)}
+.pack-tear-track{position:absolute;left:10%;right:10%;top:22%;height:46px;border-radius:999px;background:rgba(255,255,255,0.32);box-shadow:inset 0 0 0 2px rgba(255,255,255,0.5);overflow:hidden;display:flex;align-items:center;pointer-events:auto}
+.pack-tear-track::before{content:"";position:absolute;left:18px;right:18px;top:50%;height:3px;background:repeating-linear-gradient(90deg,rgba(75,59,37,0.38) 0 10px,transparent 10px 18px);transform:translateY(-50%)}
+.pack-tear-progress{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(0);transform-origin:left center;background:linear-gradient(90deg,rgba(255,255,255,0.04),rgba(255,255,255,0.72));will-change:transform}
+.pack-pull-tab{position:absolute;left:16px;top:50%;width:34px;height:34px;border-radius:50%;background:#fff;box-shadow:0 8px 18px rgba(75,59,37,0.2);transform:translateY(-50%);will-change:transform}
+.pack-pull-tab::before,.pack-pull-tab::after{content:"";position:absolute;top:50%;width:10px;height:10px;border-top:3px solid var(--orange-5);border-right:3px solid var(--orange-5);transform:translateY(-50%) rotate(45deg)}
+.pack-pull-tab::before{left:8px}
+.pack-pull-tab::after{left:16px}
 @keyframes knowledgeFlip{0%{transform:rotateY(-90deg) scale(0.7);opacity:0}60%{transform:rotateY(12deg) scale(1.04);opacity:1}80%{transform:rotateY(-5deg) scale(0.98)}100%{transform:rotateY(0deg) scale(1);opacity:1}}
 @keyframes knowledgeDrop{0%{transform:translateY(-120px) scale(0.4);opacity:0}55%{transform:translateY(12px) scale(1.06);opacity:1}75%{transform:translateY(-6px) scale(0.97)}100%{transform:translateY(0) scale(1);opacity:1}}
 @keyframes knowledgePop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
@@ -180,6 +198,10 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .confetti-layer{position:absolute;top:0;left:0;right:0;bottom:0;z-index:26;pointer-events:none;overflow:hidden}
 .confetti{position:absolute;top:-10px;animation:confDrop linear forwards}
 @keyframes confDrop{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(800px) rotate(720deg);opacity:0}}
+
+.feedback-overlay{position:absolute;inset:0;z-index:37;display:none;align-items:center;justify-content:center;background:transparent;padding:0;animation:overlayFadeIn 0.18s ease-out}
+.feedback-overlay.show{display:flex}
+.feedback-video{width:100%;height:100%;object-fit:contain;border-radius:0;background:transparent;box-shadow:none;pointer-events:none}
 
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:1ms!important}
@@ -220,9 +242,23 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
     </div>
   </div>
   <div class="confetti-layer" id="confettiLayer"></div>
+  <div class="feedback-overlay" id="feedbackOverlay" aria-hidden="true">
+    <video class="feedback-video" id="feedbackVideo" src="assets/feedback/趣味入场.mov" preload="auto" playsinline webkit-playsinline></video>
+  </div>
   <div class="knowledge-overlay" id="knowledgeOverlay">
     <div class="knowledge-card" id="knowledgeCard">
       <canvas class="scratch-canvas" id="scratchCanvas" style="display:none"></canvas>
+      <div class="pack-opener" id="packOpener" aria-hidden="true">
+        <div class="pack-body">
+          <div class="pack-emblem">?</div>
+        </div>
+        <div class="pack-top-left"></div>
+        <div class="pack-top-right"></div>
+        <div class="pack-tear-track" id="packTearTrack">
+          <span class="pack-tear-progress" id="packTearProgress"></span>
+          <span class="pack-pull-tab" id="packPullTab"></span>
+        </div>
+      </div>
       <div class="knowledge-card-icon" id="knowledgeIcon"></div>
       <span class="knowledge-card-word" id="knowledgeWord"></span>
       <button class="speaker-btn" id="knowledgeSpeak"><img src="assets/UI/speck.svg" alt="Speak"></button>
@@ -332,6 +368,9 @@ let bgmAudio=null;
 let bgmEnabled=true;
 let knowledgeShowing=false;
 let celebShowing=false;
+let feedbackIntroPlayed=false;
+let feedbackIntroPlaying=false;
+let feedbackRestoreBgm=false;
 let readCompleteTimer=null;
 let ttsVoice=null;
 let ttsReady=false;
@@ -343,6 +382,15 @@ let scratchRevealed=false;
 let scratchMoveCount=0;
 const SCRATCH_BRUSH=32;
 const SCRATCH_THRESHOLD=0.3;
+let packActive=false;
+let packTorn=false;
+let packStartX=0;
+let packStartY=0;
+let packProgress=0;
+let nextOpenerIndex=0;
+const KNOWLEDGE_OPENERS=['pack','scratch'];
+const FEEDBACK_WORD_KEY='balloons';
+const FEEDBACK_VIDEO_SRC='assets/feedback/趣味入场.mov';
 let pendingRevealCallback=null;
 let showTranslation=false;
 let translationMode='word';
@@ -449,11 +497,17 @@ const autoBtn=$('autoBtn');
 const bgmBtn=$('bgmBtn');
 const celebLayer=$('celebLayer');
 const confettiLayer=$('confettiLayer');
+const feedbackOverlay=$('feedbackOverlay');
+const feedbackVideo=$('feedbackVideo');
 const knowledgeOverlay=$('knowledgeOverlay');
 const knowledgeCard=$('knowledgeCard');
 const knowledgeIcon=$('knowledgeIcon');
 const knowledgeWord=$('knowledgeWord');
 const knowledgeSpeak=$('knowledgeSpeak');
+const packOpener=$('packOpener');
+const packTearTrack=$('packTearTrack');
+const packTearProgress=$('packTearProgress');
+const packPullTab=$('packPullTab');
 const entryEffectName=$('entryEffectName');
 const entryEffectCount=$('entryEffectCount');
 const entryPreviewCard=$('entryPreviewCard');
@@ -772,11 +826,70 @@ function hideHotspots(){
   });
 }
 
+function finishFeedbackIntro(resolve){
+  feedbackIntroPlaying=false;
+  feedbackOverlay.classList.remove('show');
+  feedbackOverlay.setAttribute('aria-hidden','true');
+  feedbackVideo.pause();
+  feedbackVideo.onended=null;
+  feedbackVideo.onerror=null;
+  if(feedbackRestoreBgm){
+    feedbackRestoreBgm=false;
+    if(bgmEnabled)startBgm();
+  }
+  resolve();
+}
+
+function playKnowledgeFeedback(){
+  if(feedbackIntroPlayed||feedbackIntroPlaying||!feedbackOverlay||!feedbackVideo){
+    return Promise.resolve();
+  }
+  feedbackIntroPlayed=true;
+  feedbackIntroPlaying=true;
+  if(bgmAudio&&!bgmAudio.paused){
+    feedbackRestoreBgm=true;
+    bgmAudio.pause();
+  }
+  return new Promise(resolve=>{
+    let done=false;
+    const timeoutId=setTimeout(()=>complete(),6800);
+    const complete=()=>{
+      if(done)return;
+      done=true;
+      clearTimeout(timeoutId);
+      finishFeedbackIntro(resolve);
+    };
+    const tryMuted=()=>{
+      feedbackVideo.muted=true;
+      feedbackVideo.play().catch(complete);
+    };
+    feedbackVideo.src=FEEDBACK_VIDEO_SRC;
+    feedbackVideo.onended=complete;
+    feedbackVideo.onerror=complete;
+    feedbackVideo.muted=false;
+    feedbackVideo.currentTime=0;
+    feedbackOverlay.classList.add('show');
+    feedbackOverlay.setAttribute('aria-hidden','false');
+    feedbackVideo.load();
+    feedbackVideo.play().catch(tryMuted);
+  });
+}
+
+function shouldPlayKnowledgeFeedback(hs,wasExplored){
+  return !wasExplored&&!feedbackIntroPlayed&&knowledgeKey(hs.word)===FEEDBACK_WORD_KEY;
+}
+
 function preloadImages(){
   PAGES.forEach(p=>{
     const img=new Image();
     img.src=p.image;
   });
+  const feedback=document.createElement('video');
+  feedback.preload='auto';
+  feedback.src=FEEDBACK_VIDEO_SRC;
+  feedback.load();
+  feedbackVideo.src=FEEDBACK_VIDEO_SRC;
+  feedbackVideo.load();
 }
 
 function init(){
@@ -798,6 +911,13 @@ function restartBook(){
   if(readCompleteTimer){clearTimeout(readCompleteTimer);readCompleteTimer=null}
   PAGES.forEach((_,i)=>{explored[i]=new Set()});
   bookExplored.clear();
+  nextOpenerIndex=0;
+  cleanupPackOpener();
+  feedbackIntroPlayed=false;
+  feedbackIntroPlaying=false;
+  feedbackOverlay.classList.remove('show');
+  feedbackOverlay.setAttribute('aria-hidden','true');
+  feedbackVideo.pause();
   renderPage(0);
 }
 
@@ -1063,16 +1183,7 @@ function revealScratch(){
     scratchCanvas.onpointerup=null;
     scratchCanvas.onpointerleave=null;
   };
-  setTimeout(()=>{
-    if(!knowledgeShowing||!pendingRevealCallback)return;
-    ttsSpeak(knowledgeWord.textContent).then(()=>{
-      if(pendingRevealCallback){
-        const cb=pendingRevealCallback;
-        pendingRevealCallback=null;
-        cb();
-      }
-    });
-  },1000);
+  finishKnowledgeReveal(1000);
 }
 
 function cleanupScratch(){
@@ -1083,6 +1194,148 @@ function cleanupScratch(){
   scratchCanvas.onpointermove=null;
   scratchCanvas.onpointerup=null;
   scratchCanvas.onpointerleave=null;
+}
+
+function chooseKnowledgeOpener(){
+  const opener=KNOWLEDGE_OPENERS[nextOpenerIndex%KNOWLEDGE_OPENERS.length];
+  nextOpenerIndex++;
+  return opener;
+}
+
+function normalizeKnowledgeOpener(opener){
+  if(opener===true)return chooseKnowledgeOpener();
+  if(opener==='scratch'||opener==='pack')return opener;
+  return null;
+}
+
+function finishKnowledgeReveal(delay){
+  setTimeout(()=>{
+    if(!knowledgeShowing||!pendingRevealCallback)return;
+    ttsSpeak(knowledgeWord.textContent).then(()=>{
+      if(pendingRevealCallback){
+        const cb=pendingRevealCallback;
+        pendingRevealCallback=null;
+        cb();
+      }
+    });
+  },delay);
+}
+
+function resetPackGesture(){
+  packActive=false;
+  packProgress=0;
+  if(window.gsap){
+    gsap.set(packTearProgress,{scaleX:0});
+    gsap.set(packPullTab,{x:0});
+  }else{
+    packTearProgress.style.transform='scaleX(0)';
+    packPullTab.style.transform='translateY(-50%)';
+  }
+}
+
+function initPackOpener(){
+  cleanupScratch();
+  packTorn=false;
+  packActive=false;
+  packProgress=0;
+  packOpener.style.display='block';
+  packOpener.classList.add('show');
+  packOpener.setAttribute('aria-hidden','false');
+  resetPackGesture();
+  if(window.gsap){
+    gsap.killTweensOf(packOpener.querySelectorAll('*'));
+    gsap.fromTo(packOpener,{opacity:0,scale:1.05,filter:'brightness(1.25) saturate(1.5)'},{opacity:1,scale:1,filter:'brightness(1) saturate(1)',duration:0.3,ease:'power2.out'});
+  }
+  packOpener.onpointerdown=e=>{
+    if(packTorn)return;
+    const trackRect=packTearTrack.getBoundingClientRect();
+    if(e.clientY<trackRect.top-42||e.clientY>trackRect.bottom+48)return;
+    packActive=true;
+    packStartX=e.clientX;
+    packStartY=e.clientY;
+    packOpener.setPointerCapture&&packOpener.setPointerCapture(e.pointerId);
+  };
+  packOpener.onpointermove=e=>{
+    if(!packActive||packTorn)return;
+    const dx=e.clientX-packStartX;
+    const dy=e.clientY-packStartY;
+    const travel=Math.max(knowledgeCard.offsetWidth*0.38,110);
+    packProgress=Math.min(1,Math.abs(dx)/travel);
+    const dir=dx<0?-1:1;
+    if(window.gsap){
+      gsap.set(packTearProgress,{scaleX:packProgress});
+      gsap.set(packPullTab,{x:dir*packProgress*(packTearTrack.offsetWidth-54)});
+    }else{
+      packTearProgress.style.transform='scaleX('+packProgress+')';
+      packPullTab.style.transform='translate('+dir*packProgress*(packTearTrack.offsetWidth-54)+'px,-50%)';
+    }
+    if(packProgress>=0.82&&Math.abs(dy)<90){
+      revealPackOpener(dir);
+    }
+  };
+  packOpener.onpointerup=()=>{if(!packTorn)resetPackGesture()};
+  packOpener.onpointercancel=()=>{if(!packTorn)resetPackGesture()};
+  packOpener.onpointerleave=()=>{if(packActive&&!packTorn)resetPackGesture()};
+}
+
+function revealPackOpener(dir){
+  if(packTorn)return;
+  packTorn=true;
+  packActive=false;
+  playSfx('btn');
+  if(knowledgeIntroTween){
+    knowledgeIntroTween.kill();
+    knowledgeIntroTween=null;
+    resetEntryVisuals(knowledgeCard);
+  }
+  const parts=entryParts(knowledgeCard);
+  const topLeft=packOpener.querySelector('.pack-top-left');
+  const topRight=packOpener.querySelector('.pack-top-right');
+  const body=packOpener.querySelector('.pack-body');
+  const track=packTearTrack;
+  if(window.gsap){
+    const tl=gsap.timeline({
+      onComplete:()=>{
+        cleanupPackOpener();
+        finishKnowledgeReveal(450);
+      }
+    });
+    gsap.set(parts,{opacity:0,y:86,scale:0.9,filter:'blur(8px)'});
+    tl.to(track,{opacity:0,y:-18,duration:0.16,ease:'power2.out'},0)
+      .to(topLeft,{x:-95,y:-70,rotation:-16,opacity:0,duration:0.46,ease:'power3.in'},0.06)
+      .to(topRight,{x:95,y:-70,rotation:16,opacity:0,duration:0.46,ease:'power3.in'},0.06)
+      .to(body,{y:150,scaleY:0.74,opacity:0,duration:0.52,ease:'power3.in'},0.12)
+      .to(packOpener,{backgroundColor:'rgba(255,255,255,0)',duration:0.3,ease:'power2.out'},0.2)
+      .to(parts,{opacity:1,y:0,scale:1,filter:'blur(0px)',stagger:0.055,duration:0.5,ease:'back.out(1.7)'},0.22);
+  }else{
+    track.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(-18px)'}],{duration:180,easing:'ease-out',fill:'forwards'});
+    topLeft.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate(-95px,-70px) rotate(-16deg)',opacity:0}],{duration:460,easing:'ease-in',fill:'forwards'});
+    topRight.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:'translate(95px,-70px) rotate(16deg)',opacity:0}],{duration:460,easing:'ease-in',fill:'forwards'});
+    body.animate([{transform:'translateY(0) scaleY(1)',opacity:1},{transform:'translateY(150px) scaleY(.74)',opacity:0}],{duration:520,easing:'ease-in',fill:'forwards'});
+    setTimeout(()=>{
+      cleanupPackOpener();
+      finishKnowledgeReveal(450);
+    },540);
+  }
+}
+
+function cleanupPackOpener(){
+  packActive=false;
+  packTorn=true;
+  packOpener.classList.remove('show');
+  packOpener.setAttribute('aria-hidden','true');
+  packOpener.style.display='none';
+  packOpener.onpointerdown=null;
+  packOpener.onpointermove=null;
+  packOpener.onpointerup=null;
+  packOpener.onpointercancel=null;
+  packOpener.onpointerleave=null;
+  if(window.gsap){
+    gsap.killTweensOf([packOpener,...packOpener.querySelectorAll('*'),...entryParts(knowledgeCard)]);
+    gsap.set([packOpener,...packOpener.querySelectorAll('*')],{clearProps:'all'});
+    gsap.set(entryParts(knowledgeCard),{clearProps:ENTRY_PART_RESET_PROPS});
+  }
+  resetPackGesture();
 }
 
 function showKnowledge(hs,sourceEl,animType,showScratch){
@@ -1096,7 +1349,9 @@ function showKnowledge(hs,sourceEl,animType,showScratch){
 
   playEntryAnimation(knowledgeCard,animType==='random'?null:animType);
 
-  if(showScratch){initScratchCard()}
+  const openerType=normalizeKnowledgeOpener(showScratch);
+  if(openerType==='scratch'){initScratchCard()}
+  if(openerType==='pack'){initPackOpener()}
 
   if(reading&&!readingPaused){
     readingPaused=true;
@@ -1109,6 +1364,7 @@ function hideKnowledge(animated){
   knowledgeShowing=false;
   pendingRevealCallback=null;
   cleanupScratch();
+  cleanupPackOpener();
   if(knowledgeIntroTween){knowledgeIntroTween.kill();knowledgeIntroTween=null;resetEntryVisuals(knowledgeCard)}
   if(animated&&knowledgeSourceEl){
     const sourceRect=knowledgeSourceEl.getBoundingClientRect();
@@ -1142,7 +1398,9 @@ function hideKnowledge(animated){
 }
 
 function onHotspot(pi,hi,hs,hotspotEl){
+  if(feedbackIntroPlaying)return;
   const wasExplored=explored[pi].has(hi);
+  const shouldPlayFeedback=shouldPlayKnowledgeFeedback(hs,wasExplored);
   const key=knowledgeKey(hs.word);
   const wasBookExplored=bookExplored.has(key);
   explored[pi].add(hi);
@@ -1165,7 +1423,16 @@ function onHotspot(pi,hi,hs,hotspotEl){
     pendingRevealCallback=null;
   }
 
-  showKnowledge(hs,hotspotEl,'random',!wasExplored);
+  const revealKnowledge=()=>showKnowledge(hs,hotspotEl,'random',!wasExplored);
+  if(shouldPlayFeedback){
+    if(reading&&!readingPaused){
+      readingPaused=true;
+      ttsStop();
+    }
+    playKnowledgeFeedback().then(revealKnowledge);
+  }else{
+    revealKnowledge();
+  }
 }
 
 function flyToTaskBar(hs,hi,hotspotEl){
