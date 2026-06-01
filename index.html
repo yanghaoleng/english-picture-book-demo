@@ -91,16 +91,16 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .translate-btn:hover{color:var(--gray-6);background:rgba(0,0,0,0.04)}
 .translate-btn.active{color:var(--orange-5)}
 
-.task-bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:15px;max-width:min(680px,calc(100vw - 132px));padding:10px 25px;background:rgba(255,255,255,0.88);border-radius:46px;box-shadow:0 3px 16px rgba(0,0,0,0.12);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}
+.task-bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:23px;max-width:min(880px,calc(100vw - 132px));padding:15px 38px;background:rgba(255,255,255,0.88);border-radius:69px;box-shadow:0 4px 20px rgba(0,0,0,0.13);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}
 .task-bar::-webkit-scrollbar{display:none}
-.task-bar.book-mode{gap:10px;padding:9px 15px;background:rgba(255,255,255,0.9)}
-.task-slot{width:54px;height:54px;flex:0 0 54px;border-radius:50%;border:3px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
-.task-bar.book-mode .task-slot{width:47px;height:47px;flex-basis:47px;border-width:2.5px}
+.task-bar.book-mode{gap:15px;padding:14px 23px;background:rgba(255,255,255,0.9)}
+.task-slot{width:81px;height:81px;flex:0 0 81px;border-radius:50%;border:4px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
+.task-bar.book-mode .task-slot{width:71px;height:71px;flex-basis:71px;border-width:3.5px}
 .task-slot.filled{border:2px solid #fff;background:var(--yellow-4);box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;animation:slotPopIn 0.5s var(--motion-spring) forwards}
-.task-slot.filled .task-icon{width:35px;height:35px;object-fit:contain}
-.task-bar.book-mode .task-slot.filled .task-icon{width:31px;height:31px}
-.task-icon-hidden{font-family:'JojoABCEcard',sans-serif;font-size:27px;color:var(--brown-3);opacity:0.7}
-.task-bar.book-mode .task-icon-hidden{font-size:24px}
+.task-slot.filled .task-icon{width:53px;height:53px;object-fit:contain}
+.task-bar.book-mode .task-slot.filled .task-icon{width:47px;height:47px}
+.task-icon-hidden{font-family:'JojoABCEcard',sans-serif;font-size:41px;color:var(--brown-3);opacity:0.7}
+.task-bar.book-mode .task-icon-hidden{font-size:36px}
 .menu-btn{position:absolute;top:10px;left:10px;z-index:16}
 
 .settings-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(35,28,20,0.45);z-index:40;display:none;justify-content:center;align-items:center;padding:22px;animation:overlayFadeIn 0.25s ease-out;backdrop-filter:blur(8px)}
@@ -1451,7 +1451,7 @@ function flyToTaskBar(hs,hi,hotspotEl){
   flyer.className='flying-card';
   flyer.src=hs.icon;
   flyer.alt=hs.word;
-  const flyerSize=54;
+  const flyerSize=Math.max(sRect.width,54);
   flyer.style.position='fixed';
   flyer.style.width=flyerSize+'px';
   flyer.style.height=flyerSize+'px';
