@@ -57,10 +57,10 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .picture-wrap{flex:1;display:flex;justify-content:center;align-items:center;position:relative;overflow:hidden;margin:0}
 .page-img{width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;pointer-events:none}
 
-.hotspot{position:absolute;width:45px;height:45px;cursor:pointer;z-index:10;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s}
+.hotspot{position:absolute;width:72px;height:72px;cursor:pointer;z-index:10;transform:translate(-50%,-50%);opacity:0;transition:opacity 0.3s}
 .hotspot.visible{opacity:1}
-.hotspot-dot{width:18px;height:18px;background:var(--yellow-4);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:dotPulse 1.5s ease-in-out infinite;box-shadow:0 0 10px rgba(252,218,0,0.5);border:3px solid #fff}
-.hotspot-ring{width:45px;height:45px;border:2.5px solid rgba(252,218,0,0.4);border-radius:50%;position:absolute;top:0;left:0;animation:ringPulse 1.5s ease-in-out infinite}
+.hotspot-dot{width:36px;height:36px;background:var(--yellow-4);border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:dotPulse 1.5s ease-in-out infinite;box-shadow:0 0 18px rgba(252,218,0,0.55);border:5px solid #fff}
+.hotspot-ring{width:72px;height:72px;border:3.5px solid rgba(252,218,0,0.4);border-radius:50%;position:absolute;top:0;left:0;animation:ringPulse 1.5s ease-in-out infinite}
 .hotspot.stamp-in{animation:stampIn 1.2s var(--motion-spring) forwards}
 @keyframes dotPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1}50%{transform:translate(-50%,-50%) scale(1.4);opacity:0.8}}
 @keyframes ringPulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.6);opacity:0}}
@@ -91,16 +91,16 @@ body{background:#fff;display:flex;justify-content:center;align-items:center;font
 .translate-btn:hover{color:var(--gray-6);background:rgba(0,0,0,0.04)}
 .translate-btn.active{color:var(--orange-5)}
 
-.task-bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:12px;max-width:min(560px,calc(100vw - 178px));padding:8px 20px;background:rgba(255,255,255,0.88);border-radius:40px;box-shadow:0 2px 12px rgba(0,0,0,0.1);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}
+.task-bar{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:15;display:flex;align-items:center;gap:15px;max-width:min(680px,calc(100vw - 132px));padding:10px 25px;background:rgba(255,255,255,0.88);border-radius:46px;box-shadow:0 3px 16px rgba(0,0,0,0.12);backdrop-filter:blur(8px);overflow-x:auto;scrollbar-width:none}
 .task-bar::-webkit-scrollbar{display:none}
-.task-bar.book-mode{gap:8px;padding:7px 12px;background:rgba(255,255,255,0.9)}
-.task-slot{width:44px;height:44px;flex:0 0 44px;border-radius:50%;border:2.5px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
-.task-bar.book-mode .task-slot{width:38px;height:38px;flex-basis:38px;border-width:2px}
+.task-bar.book-mode{gap:10px;padding:9px 15px;background:rgba(255,255,255,0.9)}
+.task-slot{width:54px;height:54px;flex:0 0 54px;border-radius:50%;border:3px dashed var(--brown-3);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;cursor:default}
+.task-bar.book-mode .task-slot{width:47px;height:47px;flex-basis:47px;border-width:2.5px}
 .task-slot.filled{border:2px solid #fff;background:var(--yellow-4);box-shadow:0 2px 6px rgba(0,0,0,0.1);cursor:pointer;animation:slotPopIn 0.5s var(--motion-spring) forwards}
-.task-slot.filled .task-icon{width:28px;height:28px;object-fit:contain}
-.task-bar.book-mode .task-slot.filled .task-icon{width:25px;height:25px}
-.task-icon-hidden{font-family:'JojoABCEcard',sans-serif;font-size:22px;color:var(--brown-3);opacity:0.7}
-.task-bar.book-mode .task-icon-hidden{font-size:20px}
+.task-slot.filled .task-icon{width:35px;height:35px;object-fit:contain}
+.task-bar.book-mode .task-slot.filled .task-icon{width:31px;height:31px}
+.task-icon-hidden{font-family:'JojoABCEcard',sans-serif;font-size:27px;color:var(--brown-3);opacity:0.7}
+.task-bar.book-mode .task-icon-hidden{font-size:24px}
 .menu-btn{position:absolute;top:10px;left:10px;z-index:16}
 
 .settings-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(35,28,20,0.45);z-index:40;display:none;justify-content:center;align-items:center;padding:22px;animation:overlayFadeIn 0.25s ease-out;backdrop-filter:blur(8px)}
@@ -1451,17 +1451,20 @@ function flyToTaskBar(hs,hi,hotspotEl){
   flyer.className='flying-card';
   flyer.src=hs.icon;
   flyer.alt=hs.word;
+  const flyerSize=54;
   flyer.style.position='fixed';
-  flyer.style.left=(hRect.left-appRect.left+hRect.width/2-22)+'px';
-  flyer.style.top=(hRect.top-appRect.top+hRect.height/2-22)+'px';
+  flyer.style.width=flyerSize+'px';
+  flyer.style.height=flyerSize+'px';
+  flyer.style.left=(hRect.left-appRect.left+hRect.width/2-flyerSize/2)+'px';
+  flyer.style.top=(hRect.top-appRect.top+hRect.height/2-flyerSize/2)+'px';
   flyer.style.transition='none';
   $('app').appendChild(flyer);
 
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       flyer.style.transition='all 0.6s var(--motion-spring)';
-      flyer.style.left=(sRect.left-appRect.left+sRect.width/2-22)+'px';
-      flyer.style.top=(sRect.top-appRect.top+sRect.height/2-22)+'px';
+      flyer.style.left=(sRect.left-appRect.left)+'px';
+      flyer.style.top=(sRect.top-appRect.top)+'px';
       flyer.style.width=sRect.width+'px';
       flyer.style.height=sRect.height+'px';
 
